@@ -55,14 +55,34 @@ const rows = await cache.getOrSet('gallery:all', () => db.list(), 300);
 - **Subsequent requests (cache hit):** ~3ms (fetches from Memcached)
 - **Cache automatically expires after 5 minutes**
 
-### Cache Invalidation
+### Cache Updates (Optimized)
 ```javascript
 // POST /api/generate
-// When new Pokemon is created, cache is cleared
-await cache.del('gallery:all');
+// When new Pokemon is created, cache is updated (not invalidated)
+const cached = await cache.get('gallery:all');
+if (cached && Array.isArray(cached)) {
+  cached.unshift(saved); // Add new Pokemon to cache
+  await cache.set('gallery:all', cached, 300);
+}
+
+// PATCH /api/pokaimon/:id/like
+// When Pokemon is liked, update it in cache
+const cached = await cache.get('gallery:all');
+if (cached && Array.isArray(cached)) {
+  const index = cached.findIndex(p => p.id === id);
+  if (index !== -1) {
+    cached[index] = updated;
+    await cache.set('gallery:all', cached, 300);
+  }
+}
 ```
 
-This ensures users always see the latest data immediately after creating new Pokemon!
+**Why update instead of delete?**
+- ⚡ **Faster:** No need to rebuild cache from database
+- 💾 **More efficient:** Reuses existing cached data
+- 🎯 **Better UX:** Users see updates instantly, no loading delay
+
+This ensures users always see the latest data immediately, without waiting for cache rebuilds!
 
 ## Testing Cache Performance
 

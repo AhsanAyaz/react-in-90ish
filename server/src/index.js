@@ -141,9 +141,13 @@ app.post('/api/generate', async (req, res) => {
       };
       const saved = await db.insert(pokemon);
       
-      // Invalidate gallery cache on new Pokemon creation
-      await cache.del('gallery:all');
-      console.log('Cache deleted: gallery:all')
+      // Update gallery cache by prepending new Pokemon (more efficient than invalidation)
+      const cached = await cache.get('gallery:all');
+      if (cached && Array.isArray(cached)) {
+        cached.unshift(saved); // Add to beginning (newest first)
+        await cache.set('gallery:all', cached, 300);
+        console.log('Cache updated: gallery:all in insert')
+      }
       
       return res.json(saved);
     } catch (aiErr) {
@@ -151,9 +155,14 @@ app.post('/api/generate', async (req, res) => {
       const simulated = simulatePokemon(doodle_data);
       const saved = await db.insert(simulated);
       
-      // Invalidate gallery cache on new Pokemon creation
-      await cache.del('gallery:all');
-      console.log('Cache deleted: gallery:all in fallback')
+      // Update gallery cache by prepending new Pokemon
+      const cached = await cache.get('gallery:all');
+      if (cached && Array.isArray(cached)) {
+        cached.unshift(saved);
+        await cache.set('gallery:all', cached, 300);
+        console.log('Cache updated: gallery:all in insert fallback')
+      }
+      
       return res.json(saved);
     }
   } catch (e) {
@@ -168,8 +177,18 @@ app.patch('/api/pokaimon/:id/like', async (req, res) => {
     if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' });
     const updated = await db.like(id);
     if (!updated) return res.status(404).json({ error: 'Not found' });
-    console.log('Cache deleted: gallery:all in like')
-    await cache.del('gallery:all');
+    
+    // Update the Pokemon in cache (more efficient than invalidation)
+    const cached = await cache.get('gallery:all');
+    if (cached && Array.isArray(cached)) {
+      const index = cached.findIndex(p => p.id === id);
+      if (index !== -1) {
+        cached[index] = updated;
+        await cache.set('gallery:all', cached, 300);
+        console.log(`Cache updated: Pokemon #${id} in gallery:all`);
+      }
+    }
+    
     res.json(updated);
   } catch (e) {
     console.error(e);
