@@ -9,11 +9,12 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "@google/genai": "^0.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "pg": "^8.11.5",
-    "@google/genai": "^0.9.0",
-    "mime": "^4.0.4"
+    "memcached": "^2.2.2",
+    "mime": "^4.0.4",
+    "pg": "^8.11.5"
   }
 }

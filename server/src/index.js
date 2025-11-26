@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { Database } from './db.js';
 import { generateImageFromDoodle, generatePokemonMeta, generateActionImage } from './ai.js';
+import cache from './cache.js';
 
 dotenv.config();
 
@@ -69,9 +70,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+// Gallery endpoint with Memcached caching
 app.get('/api/gallery', async (_req, res) => {
   try {
-    const rows = await db.list();
+    const rows = await cache.getOrSet('gallery:all', () => db.list(), 300);
     res.json(rows);
   } catch (e) {
     console.error(e);
@@ -81,7 +83,7 @@ app.get('/api/gallery', async (_req, res) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { doodle_data } = req.body || {};
+    const { doodle_data, gemini_api_key } = req.body || {};
     if (!doodle_data || typeof doodle_data !== 'string') {
       return res.status(400).json({ error: 'doodle_data (base64) is required' });
     }
@@ -89,12 +91,12 @@ app.post('/api/generate', async (req, res) => {
     try {
       // Attempt real AI generation if configured
       // 1) Generate the base image from the doodle
-      const imgB64 = await generateImageFromDoodle(doodle_data);
+      const imgB64 = await generateImageFromDoodle(doodle_data, gemini_api_key);
       const imageDataUrl = `data:image/png;base64,${imgB64}`;
       // 2) Generate metadata using the produced image as reference for higher accuracy
       const meta = await generatePokemonMeta(
         'Design an original battle-creature matching the reference. Use allowed types and include the name in each power description.',
-        { baseImageDataUrl: imageDataUrl }
+        { baseImageDataUrl: imageDataUrl, apiKey: gemini_api_key }
       );
 
       const normalizedPowers = Array.isArray(meta?.powers)
@@ -128,11 +130,19 @@ app.post('/api/generate', async (req, res) => {
         doodle_source: (doodle_data || '').slice(0, 60) + '...',
       };
       const saved = await db.insert(pokemon);
+      
+      // Invalidate gallery cache on new Pokemon creation
+      await cache.del('gallery:all');
+      
       return res.json(saved);
     } catch (aiErr) {
       console.warn('[AI] Falling back to simulated generation:', aiErr.message);
       const simulated = simulatePokemon(doodle_data);
       const saved = await db.insert(simulated);
+      
+      // Invalidate gallery cache on new Pokemon creation
+      await cache.del('gallery:all');
+      
       return res.json(saved);
     }
   } catch (e) {
@@ -158,7 +168,7 @@ app.post('/api/pokaimon/:id/action-image', async (req, res) => {
   try {
     const id = Number(req.params.id)
     if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid id' })
-    const { power, force } = req.body || {}
+    const { power, force, gemini_api_key } = req.body || {}
     const powerName = typeof power === 'string' ? power : power?.name
     const powerDesc = typeof power === 'object' ? power?.description : undefined
     if (!powerName) return res.status(400).json({ error: 'power (name) required' })
@@ -177,6 +187,7 @@ app.post('/api/pokaimon/:id/action-image', async (req, res) => {
         name: pokemon.name,
         type: pokemon.type,
         characteristics: pokemon.characteristics,
+        apiKey: gemini_api_key,
       },
       { name: powerName, description: powerDesc }
     )

@@ -1,3 +1,4 @@
+import { URL } from 'url';
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -7,7 +8,9 @@ export class Database {
       throw new Error('DATABASE_URL is required');
     }
     this.url = url;
-    this.pool = new Pool({ connectionString: this.url });
+    this.pool = new Pool({
+      connectionString: this.url,
+    });
   }
 
   async connect() {

@@ -6,8 +6,9 @@ const ALLOWED_TYPES = [
   'Normal','Fire','Water','Grass','Electric','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'
 ]
 
-function getClient() {
-  const apiKey = process.env.GEMINI_API_KEY
+function getClient(apiKeyOverride = null) {
+  // Allow client to provide API key, otherwise use env var
+  const apiKey = apiKeyOverride || process.env.GEMINI_API_KEY
   if (!apiKey) return null
   try {
     return new GoogleGenAI({ apiKey })
@@ -16,8 +17,8 @@ function getClient() {
   }
 }
 
-export async function generateImageFromDoodle(base64Png) {
-  const ai = getClient()
+export async function generateImageFromDoodle(base64Png, apiKey = null) {
+  const ai = getClient(apiKey)
   if (!ai) throw new Error('GEMINI_API_KEY missing')
 
   const contents = [
@@ -52,8 +53,8 @@ export async function generateImageFromDoodle(base64Png) {
   return data // base64 (png)
 }
 
-export async function generatePokemonMeta(promptText, { baseImageDataUrl } = {}) {
-  const ai = getClient()
+export async function generatePokemonMeta(promptText, { baseImageDataUrl, apiKey } = {}) {
+  const ai = getClient(apiKey)
   if (!ai) throw new Error('GEMINI_API_KEY missing')
 
   const config = {
@@ -122,8 +123,8 @@ export async function generatePokemonMeta(promptText, { baseImageDataUrl } = {})
   return parsed
 }
 
-export async function generateActionImage({ baseImageDataUrl, name, type, characteristics }, power) {
-  const ai = getClient()
+export async function generateActionImage({ baseImageDataUrl, name, type, characteristics, apiKey }, power) {
+  const ai = getClient(apiKey)
   if (!ai) throw new Error('GEMINI_API_KEY missing')
 
   // Extract base64 from data URL if available

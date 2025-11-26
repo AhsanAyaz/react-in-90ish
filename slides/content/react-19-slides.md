@@ -21,19 +21,37 @@
 - [Antigravity](https://antigravity.dev/) OR [VSCode](https://code.visualstudio.com/Download)
 - [NodeJS](https://nodejs.org/en/download/)
 - [Git](https://git-scm.com/downloads)
-- [Create React App / Vite](https://vitejs.dev/)
-- [ES7+ React Snippets Extension](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
+- [Vite](https://vitejs.dev/)
+- [ES7+ React Snippets Extension (optional)](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
 
 ---
 
 ## Agenda for Today
 
 - What is React & Virtual DOM
+
+<!-- .element: class="fragment" -->
 - JSX & Components
+
+<!-- .element: class="fragment" -->
+- Event Handlers & Forms
+
+<!-- .element: class="fragment" -->
+- Conditional Rendering & Lists
+
+<!-- .element: class="fragment" -->
 - State & Props
+
+<!-- .element: class="fragment" -->
 - Hooks: `useState`, `useEffect`, `useMemo`
+
+<!-- .element: class="fragment" -->
 - Context API & React Router
-- Building a **PokAImon Generator** app (workshop)!
+
+<!-- .element: class="fragment" -->
+- Building a `PokAImon Generator` app (workshop)!
+
+<!-- .element: class="fragment" -->
 
 ---
 
@@ -70,9 +88,9 @@
 
 ---
 
-## Component-Based Architecture
+### Component-Based Architecture
 
-![Component Architecture](https://placeholder.com/components)
+<iframe src="assets/supporting-html/component-tree.html" width="100%" height="680px" style="border: none;"></iframe>
 
 ```jsx
 function App() {
@@ -382,6 +400,371 @@ function Card({ children }) {
 
 ---
 
+# Event Handlers
+
+### Making Components Interactive
+
+--
+
+## Basic Event Handlers
+
+```jsx
+function Button() {
+  const handleClick = () => {
+    alert('Button clicked!');
+  };
+
+  return <button onClick={handleClick}>Click Me</button>;
+}
+
+// Inline handler
+<button onClick={() => alert('Clicked!')}>Click</button>
+```
+
+--
+
+## Common Events
+
+```jsx
+<button onClick={handleClick}>Click</button>
+<input onChange={handleChange} />
+<input onFocus={handleFocus} />
+<input onBlur={handleBlur} />
+<form onSubmit={handleSubmit} />
+<div onMouseEnter={handleHover} />
+<input onKeyDown={handleKeyPress} />
+```
+
+--
+
+## Event Parameters
+
+```jsx
+function EventExample() {
+  const handleClick = (event) => {
+    console.log(event.target); // The clicked element
+    event.preventDefault(); // Prevent default behavior
+    event.stopPropagation(); // Stop bubbling
+  };
+
+  return <button onClick={handleClick}>Click Me</button>;
+}
+```
+
+--
+
+## Handlers with Arguments
+
+```jsx
+function GreetButtons() {
+  const greet = (name) => {
+    alert(`Hello, ${name}!`);
+  };
+
+  return (
+    <div>
+      <button onClick={() => greet('Alice')}>Greet Alice</button>
+      <button onClick={() => greet('Bob')}>Greet Bob</button>
+    </div>
+  );
+}
+```
+
+---
+
+# Conditional Rendering
+
+### Showing/Hiding Content Dynamically
+
+--
+
+## Ternary Operator
+
+```jsx
+function Greeting({ isLoggedIn }) {
+  return (
+    <div>
+      {isLoggedIn ? (
+        <h1>Welcome back!</h1>
+      ) : (
+        <h1>Please sign in.</h1>
+      )}
+    </div>
+  );
+}
+```
+
+--
+
+## Logical AND (&&)
+
+```jsx
+function Notifications({ count }) {
+  return (
+    <div>
+      {count > 0 && (
+        <span>You have {count} new messages!</span>
+      )}
+    </div>
+  );
+}
+```
+
+Show something only when condition is `true`
+
+--
+
+## Multiple Conditions
+
+```jsx
+function StatusMessage({ status }) {
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+  
+  if (status === 'error') {
+    return <div>Error occurred!</div>;
+  }
+  
+  if (status === 'success') {
+    return <div>Success!</div>;
+  }
+  
+  return <div>Unknown status</div>;
+}
+```
+
+--
+
+## Switch Statements
+
+```jsx
+function UserDashboard({ role }) {
+  const renderContent = () => {
+    switch (role) {
+      case 'admin':
+        return <AdminPanel />;
+      case 'user':
+        return <UserProfile />;
+      default:
+        return <GuestView />;
+    }
+  };
+
+  return <div>{renderContent()}</div>;
+}
+```
+
+---
+
+# Lists & Looping
+
+### Rendering Dynamic Data
+
+--
+
+## Array Mapping
+
+```jsx
+function FruitList() {
+  const fruits = ['Apple', 'Banana', 'Orange'];
+
+  return (
+    <ul>
+      {fruits.map((fruit, index) => (
+        <li key={index}>{fruit}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+--
+
+## Keys - Best Practice
+
+```jsx
+function UserList() {
+  const users = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+  ];
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Always use unique IDs, not array indices!
+
+--
+
+## Filtering Lists
+
+```jsx
+function TodoList({ todos }) {
+  const activeTodos = todos.filter((todo) => !todo.completed);
+
+  return (
+    <ul>
+      {activeTodos.map((todo) => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+--
+
+## Dynamic Lists (Add/Remove)
+
+```jsx
+function ShoppingList() {
+  const [items, setItems] = useState(['Milk', 'Bread']);
+
+  const addItem = (item) => {
+    setItems([...items, item]);
+  };
+
+  const removeItem = (index) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
+
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>
+          {item}
+          <button onClick={() => removeItem(index)}>❌</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+---
+
+# Forms & Input Handling
+
+### Controlled Components
+
+--
+
+## Controlled Input
+
+```jsx
+function NameForm() {
+  const [name, setName] = useState('');
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <p>Hello, {name}!</p>
+    </div>
+  );
+}
+```
+
+React controls the input value!
+
+--
+
+## Multiple Inputs
+
+```jsx
+function SignupForm() {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <form>
+      <input name="username" onChange={handleChange} />
+      <input name="email" onChange={handleChange} />
+    </form>
+  );
+}
+```
+
+--
+
+## Form Submission
+
+```jsx
+function LoginForm() {
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevent page reload!
+    console.log('Submitting:', email);
+    // Send to API...
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+```
+
+--
+
+## Checkboxes & Radio Buttons
+
+```jsx
+function Preferences() {
+  const [agreed, setAgreed] = useState(false);
+  const [theme, setTheme] = useState('light');
+
+  return (
+    <div>
+      {/* Checkbox */}
+      <input
+        type="checkbox"
+        checked={agreed}
+        onChange={(e) => setAgreed(e.target.checked)}
+      />
+
+      {/* Radio */}
+      <input
+        type="radio"
+        value="light"
+        checked={theme === 'light'}
+        onChange={(e) => setTheme(e.target.value)}
+      />
+    </div>
+  );
+}
+```
+
+---
+
 # State Management
 
 ### Making Components Dynamic
@@ -595,108 +978,9 @@ useEffect(() => {
 
 ---
 
-# More Essential Hooks
-
---
-
-<iframe src="assets/supporting-html/hooks-visualization.html" width="100%" height="680px" style="border: none;"></iframe>
-
---
-
-## useRef
-
-```jsx
-function TextInput() {
-  const inputRef = useRef(null);
-
-  const focusInput = () => {
-    inputRef.current.focus();
-  };
-
-  return (
-    <>
-      <input ref={inputRef} />
-      <button onClick={focusInput}>Focus</button>
-    </>
-  );
-}
-```
-
-Persists across renders without causing re-renders
-
---
-
-## useMemo
-
-```jsx
-function FilteredList({ items, filter }) {
-  // Only recalculates when items or filter change
-  const filtered = useMemo(() => {
-    return items.filter((item) => item.name.includes(filter));
-  }, [items, filter]);
-
-  return <List items={filtered} />;
-}
-```
-
-Cache expensive calculations
-
---
-
-## useCallback
-
-```jsx
-function Parent() {
-  const [count, setCount] = useState(0);
-
-  // Same function reference between renders
-  const handleClick = useCallback(() => {
-    console.log('Clicked!');
-  }, []);
-
-  return <MemoizedChild onClick={handleClick} />;
-}
-```
-
-Cache function references
-
---
-
-## useReducer
-
-```jsx
-function reducer(state, action) {
-  switch (action.type) {
-    case 'increment':
-      return { count: state.count + 1 };
-    case 'decrement':
-      return { count: state.count - 1 };
-    default:
-      return state;
-  }
-}
-
-function Counter() {
-  const [state, dispatch] = useReducer(reducer, { count: 0 });
-
-  return (
-    <>
-      <p>{state.count}</p>
-      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-    </>
-  );
-}
-```
-
----
-
 # Context API
 
-### Avoiding Prop Drilling
-
---
-
-<iframe src="assets/supporting-html/context-api-animation.html" width="100%" height="680px" style="border: none;"></iframe>
+### Sharing State Across Components
 
 --
 
@@ -833,307 +1117,186 @@ function Header() {
 
 `Link` prevents full page reload!
 
---
-
-## Active Links with NavLink
-
-```jsx
-import { NavLink } from 'react-router-dom';
-
-function Header() {
-  return (
-    <nav>
-      <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
-        Home
-      </NavLink>
-    </nav>
-  );
-}
-```
-
-Know which page is active!
-
---
-
-## Dynamic Routes
-
-```jsx
-<Routes>
-  <Route path="/users/:userId" element={<UserProfile />} />
-  <Route path="/products/:id" element={<Product />} />
-</Routes>;
-
-// Access params in component
-import { useParams } from 'react-router-dom';
-
-function UserProfile() {
-  const { userId } = useParams();
-  return <div>User ID: {userId}</div>;
-}
-```
-
---
-
-## Programmatic Navigation
-
-```jsx
-import { useNavigate } from 'react-router-dom';
-
-function LoginForm() {
-  const navigate = useNavigate();
-
-  const handleSubmit = () => {
-    // After login...
-    navigate('/dashboard');
-  };
-
-  return <button onClick={handleSubmit}>Login</button>;
-}
-```
-
-Navigate from code!
-
 ---
 
-# Suspense & Error Boundaries
+# Backend Architecture & Performance
+
+### Powered by Advanced Caching
 
 --
 
-## Suspense
+## Our Tech Stack
 
-```jsx
-import { Suspense, lazy } from 'react';
+**Frontend:**
+- ⚛️ React 19
+- 🎨 Tailwind CSS
+- 🔧 Vite
 
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
+**Backend:**
+- 🟢 Node.js + Express
+- 🐘 PostgreSQL
+- ⚡ **Memcached**
 
-function App() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <HeavyComponent />
-    </Suspense>
-  );
-}
+--
+
+## Our Caching Strategy
+
+**What we're using: Memcached** 🚀
+
+Fast in-memory caching for database query results
+
+**Why Memcached?**
+- Simple key-value storage (perfect for our needs)
+- Easy to set up and use
+- 10-40x performance improvement
+- Built-in support on most hosting platforms
+
+--
+
+## How Memcached Works
+
 ```
-
-Declarative loading states
-
---
-
-## Error Boundaries
-
-```jsx
-<ErrorBoundary fallback={<ErrorUI />}>
-  <Suspense fallback={<Loading />}>
-    <DataComponent />
-  </Suspense>
-</ErrorBoundary>
-```
-
-Suspense handles loading, Error Boundaries handle errors
-
----
-
-# React 19 🎉
-
-### The Future is Here!
-
---
-
-<iframe src="assets/supporting-html/react-19-features.html" width="100%" height="680px" style="border: none;"></iframe>
-
---
-
-## New `use` Hook
-
-```jsx
-function UserProfile({ userPromise }) {
-  // Suspends until promise resolves!
-  const user = use(userPromise);
-  return <h1>Hello, {user.name}!</h1>;
-}
-
-<Suspense fallback={<Loading />}>
-  <UserProfile userPromise={fetchUser()} />
-</Suspense>;
-```
-
-Read promises directly in components!
-
---
-
-## useActionState
-
-```jsx
-async function submitForm(prevState, formData) {
-  const result = await saveData(formData);
-  return { success: true, message: 'Saved!' };
-}
-
-function Form() {
-  const [state, action, isPending] = useActionState(submitForm, null);
-
-  return (
-    <form action={action}>
-      <input name="email" />
-      <button disabled={isPending}>Submit</button>
-      {state?.message && <p>{state.message}</p>}
-    </form>
-  );
-}
+┌─────────────────────┐
+│   React Frontend    │
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│  Express Server     │
+└──────────┬──────────┘
+           │
+      Cache check
+           │
+    ┌──────▼──────┐
+    │  Memcached  │ ← Fast! (1-5ms)
+    └──────┬──────┘
+           │
+    Cache miss?
+           │
+┌──────────▼──────────┐
+│  PostgreSQL         │ ← Slower (50-200ms)
+└─────────────────────┘
 ```
 
 --
 
-## useFormStatus
+## Performance Benefits
 
-```jsx
-import { useFormStatus } from 'react-dom';
+| Metric | Without Cache | With Memcached |
+|--------|---------------|----------------|
+| **Response Time** | ~150ms | ~3ms |
+| **DB Load** | 100% queries hit DB | ~10% queries hit DB |
+| **Requests/sec** | ~200 | ~2000 |
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button disabled={pending}>{pending ? 'Submitting...' : 'Submit'}</button>
-  );
-}
-
-// Child component knows form state!
-```
+**Result:** 50x faster responses, 10x more capacity! ⚡
 
 --
 
-## useOptimistic
+## Code Example
 
-```jsx
-function Messages({ messages, sendMessage }) {
-  const [optimistic, addOptimistic] = useOptimistic(
-    messages,
-    (state, newMsg) => [...state, {
-      text: newMsg,
-      sending: true
-    }]
-  );
-
-  async function send(formData) {
-    addOptimistic(formData.get('message'));
-    await sendMessage(formData);
+```javascript
+// Gallery endpoint with Memcached
+app.get('/api/gallery', async (req, res) => {
+  const cacheKey = 'gallery:all';
+  
+  // Try cache first
+  const cached = await cache.get(cacheKey);
+  if (cached) {
+    return res.json(cached); // ⚡ Cache hit! ~3ms
   }
-
-  return (/* render optimistic messages */);
-}
-```
-
-Instant UI feedback!
-
---
-
-## Server Components
-
-```jsx
-// This runs on the SERVER
-async function ProductPage({ id }) {
-  // Direct database access - no API needed!
-  const product = await db.products.find(id);
-
-  return (
-    <div>
-      <h1>{product.name}</h1>
-      <AddToCart id={id} /> {/* Client Component */}
-    </div>
-  );
-}
+  
+  // Cache miss - fetch from DB
+  const pokemon = await db.list(); // ~150ms
+  await cache.set(cacheKey, pokemon, 300); // Cache for 5 min
+  res.json(pokemon);
+});
 ```
 
 --
 
-## Server Actions
+## Other Caching Options
 
-```jsx
-// Define server action
-'use server';
-async function addToCart(productId) {
-  await db.cart.add({ productId });
-  revalidatePath('/cart');
-}
+**Redis:**
+- When you need sessions, leaderboards, real-time features
+- More features, slightly more complex
 
-// Use in client component
-<form action={addToCart}>
-  <input type="hidden" name="id" value={product.id} />
-  <button>Add to Cart</button>
-</form>;
-```
+**Varnish/CDN:**
+- HTTP caching at the edge
+- Great for static content
+
+**For our app:** Memcached gives us 90% of the benefits with 10% of the complexity!
 
 --
 
-## React Compiler
+## How It Works in Our App
 
 ```jsx
-// Before - Manual memoization
-function Component({ items }) {
-  const filtered = useMemo(() => items.filter((i) => i.active), [items]);
-  const handleClick = useCallback(() => {}, []);
-}
-
-// After - Compiler handles it!
-function Component({ items }) {
-  const filtered = items.filter((i) => i.active);
-  const handleClick = () => {};
-}
-// Automatic optimization! ✨
+// React Frontend fetches data
+const response = await fetch('/api/pokemon/123');
+// ↓
+// Varnish checks cache (hit!)
+// Returns cached response in 10ms ⚡
+//
+// OR
+//
+// Varnish miss → Redis checks (hit!)
+// OR
+// Redis miss → Memcached checks (hit!)
+// OR
+// All miss → PostgreSQL query → Cache for next time
 ```
+
+**Smart caching = Amazing UX!**
 
 ---
 
-# Interview Questions 🎯
+# What's Next?
+
+### React 19 & Advanced Topics
 
 --
 
-## "What is React?"
+## React 19 is Here! 🎉
 
-> A JavaScript **library** for building user interfaces using a **component-based** architecture with a **Virtual DOM** for efficient updates.
-
---
-
-## "What is Virtual DOM?"
-
-> A lightweight JavaScript representation of the real DOM. React uses it to calculate minimal updates needed, then batches changes to the real DOM for optimal performance.
-
---
-
-## "Props vs State?"
-
-| Props                | State                 |
-| -------------------- | --------------------- |
-| Passed from parent   | Internal to component |
-| Read-only            | Can change            |
-| Like function params | Like local variables  |
-
---
-
-## "Why Keys in Lists?"
-
-> Keys help React identify which items changed, added, or removed. Without keys, React re-renders entire lists. With keys, it updates only what changed.
-
---
-
-## "When useReducer vs useState?"
-
-| useState     | useReducer          |
-| ------------ | ------------------- |
-| Simple state | Complex state       |
-| Single value | Multiple sub-values |
-| Independent  | Related transitions |
-
---
-
-## "What's New in React 19?"
+New features we didn't cover today:
 
 - `use` hook for promises <!-- .element: class="fragment" -->
-- Server Components <!-- .element: class="fragment" -->
-- Server Actions <!-- .element: class="fragment" -->
-- useActionState, useFormStatus <!-- .element: class="fragment" -->
-- useOptimistic <!-- .element: class="fragment" -->
-- React Compiler <!-- .element: class="fragment" -->
+- `useActionState` for forms <!-- .element: class="fragment" -->
+- `useOptimistic` for instant UI <!-- .element: class="fragment" -->
+- Server Components & Actions <!-- .element: class="fragment" -->
+- React Compiler (auto-optimization) <!-- .element: class="fragment" -->
+
+**💡 Comment below if you want a dedicated React 19 video!**
+
+--
+
+## Advanced Topics
+
+Also available as bonus content:
+
+- **Advanced Hooks:** useRef, useMemo, useCallback, useReducer
+- **Performance:** Code splitting, lazy loading, virtualization
+- **Advanced Router:** useParams, useNavigate, protected routes
+- **Suspense & Error Boundaries**
+
+**Check out BONUS-ADVANCED.md for details!**
+
+---
+
+# Let's Build! 🚀
+
+### Time to Code Together
+
+--
+
+## Project Demo
+
+Building a Task Manager with:
+
+- React 19 features
+- useState & useEffect
+- Context API
+- Form handling
+- Optimistic updates
 
 ---
 
@@ -1189,8 +1352,9 @@ Building a Task Manager with:
 ### Muhammad Ahsan Ayaz
 
 - YouTube: Code with Ahsan
-- Twitter: @AhsanAyaz
-- LinkedIn: /in/nicholasahsan
+- Twitter: @codewith_ahsan
+- LinkedIn: /in/ahsanayaz
+- All other socials: [meetme.cards/p/codewithahsan](https://meetme.cards/p/codewithahsan)
 
 **Like, Subscribe & Share!**
 
