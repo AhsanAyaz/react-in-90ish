@@ -236,6 +236,17 @@ app.post('/api/pokaimon/:id/action-image', async (req, res) => {
   }
 })
 
+// SPA fallback for React Router
+// Serve index.html for all routes that don't match API or static files
+// MUST be the last route, after all API routes
+app.get('*', (req, res) => {
+  // Don't fallback for API routes or file extensions
+  if (req.path.startsWith('/api/') || req.path.includes('.')) {
+    return res.status(404).send('Not found');
+  }
+  res.sendFile('public/index.html', { root: '.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });

@@ -1288,62 +1288,13 @@ Also available as bonus content:
 
 --
 
-## Project Demo
+Building **PokAImon Generator** - a complete React app:
 
-Building a Task Manager with:
-
-- React 19 features
-- useState & useEffect
-- Context API
-- Form handling
-- Optimistic updates
-
----
-
-# Quick Reference
-
---
-
-## Hooks Summary
-
-| Hook        | Purpose               |
-| ----------- | --------------------- |
-| useState    | State in components   |
-| useEffect   | Side effects          |
-| useContext  | Access context        |
-| useRef      | Refs & mutable values |
-| useMemo     | Cache values          |
-| useCallback | Cache functions       |
-| useReducer  | Complex state         |
-
---
-
-## React 19 Hooks
-
-| Hook           | Purpose                |
-| -------------- | ---------------------- |
-| use            | Read promises/context  |
-| useActionState | Form action state      |
-| useFormStatus  | Form submission status |
-| useOptimistic  | Optimistic updates     |
-
----
-
-# Let's Build! 🚀
-
-### Time to Code Together
-
---
-
-## Project Demo
-
-Building a Task Manager with:
-
-- React 19 features
-- useState & useEffect
-- Context API
-- Form handling
-- Optimistic updates
+- 🎨 Draw doodles and generate AI PokAImon
+- 🖼️ Browse gallery with filtering/sorting  
+- 🧭 React Router navigation
+- 🎣 Custom hooks & Context API
+- 📦 Complete production-ready app
 
 ---
 
@@ -1364,5 +1315,5 @@ Building a Task Manager with:
 
 - [React Documentation](https://react.dev)
 - [React 19 Blog](https://react.dev/blog)
-- [This Course's GitHub Repo](#)
-- [Code with Ahsan YouTube](#)
+- [This Course's GitHub Repo](https://github.com/AhsanAyaz/react-in-90ish)
+- [Code with Ahsan YouTube](https://www.youtube.com/@codewithahsan)
