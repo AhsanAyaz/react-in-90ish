@@ -7,10 +7,11 @@ const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 export default function GeneratorPage() {
   // ⏸️ WORKSHOP STEP 2: Define state variables
-  // TODO: Add state for: isGenerating, error, lastResult
+  // TODO: Add state for: isGenerating, error, lastResult, hasDoodle
   // const [isGenerating, setIsGenerating] = useState(false)
   // const [error, setError] = useState(null)
   // const [lastResult, setLastResult] = useState(null)
+  // const [hasDoodle, setHasDoodle] = useState(false)
 
   const handleGenerate = async (base64) => {
     // ⏸️ WORKSHOP STEP 2: Implement API call with state management
@@ -29,7 +30,8 @@ export default function GeneratorPage() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
       <Canvas
         onGenerate={handleGenerate}
-        disabled={false /* TODO: Use isGenerating */}
+        onCanvasChange={/* TODO: setHasDoodle */ () => {}}
+        disabled={false /* TODO: Use isGenerating || !hasDoodle || !apiKey */}
       />
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col items-center justify-center transition-colors">

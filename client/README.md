@@ -247,11 +247,10 @@ Add NavLinks in the nav:
 
 **Find the TODO comments and implement:**
 
-### 2.1 Import useState and useApiKey
+### 2.1 Import useState
 
 ```jsx
 import { useState } from "react";
-import { useApiKey } from "../context/ApiKeyContext";
 ```
 
 ### 2.2 Add state variables
@@ -262,8 +261,6 @@ Replace the TODO comment with:
 const [isGenerating, setIsGenerating] = useState(false);
 const [error, setError] = useState(null);
 const [lastResult, setLastResult] = useState(null);
-const [hasDoodle, setHasDoodle] = useState(false);
-const { apiKey } = useApiKey();
 ```
 
 ### 2.3 Implement handleGenerate function
@@ -278,10 +275,7 @@ const handleGenerate = async (base64) => {
     const res = await fetch(`${API}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doodle_data: base64,
-        gemini_api_key: apiKey,
-      }),
+      body: JSON.stringify({ doodle_data: base64 }),
     });
     if (!res.ok) throw new Error("Failed to generate");
     const json = await res.json();
@@ -294,25 +288,18 @@ const handleGenerate = async (base64) => {
 };
 ```
 
-### 2.4 Update Canvas props
+### 2.4 Update disabled prop
 
 Change:
 
 ```jsx
-<Canvas
-  onGenerate={handleGenerate}
-  disabled={false /* TODO: Use isGenerating */}
-/>
+disabled={false /* TODO: Use isGenerating */}
 ```
 
 To:
 
 ```jsx
-<Canvas
-  onGenerate={handleGenerate}
-  onCanvasChange={setHasDoodle}
-  disabled={isGenerating || !hasDoodle || !apiKey}
-/>
+disabled = { isGenerating };
 ```
 
 ### 2.5 Add conditional rendering
