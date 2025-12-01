@@ -33,6 +33,36 @@ A PokAImon Generator app where you can:
 
 ---
 
+## Video Tutorial
+
+Watch the full workshop on YouTube:
+
+[![React 19 Workshop](https://img.youtube.com/vi/tqjJrXd27m4/0.jpg)](https://www.youtube.com/watch?v=tqjJrXd27m4)
+
+---
+
+## StackBlitz examples (shown in the video tutorial)
+
+Try the stackblitz examples directly in your browser:
+
+[Open in StackBlitz ⚡️](https://stackblitz.com/@AhsanAyaz/collections/react-in-90-ish)
+
+You can also find the code for these examples in the `stackblitz-examples` directory in this repository.
+
+---
+
+## Sponsors
+
+Support the project by checking out our sponsors:
+
+💰 **Get 50% OFF Cloudways Hosting for 3 months:**  
+[Sign Up Now](https://unified.cloudways.com/signup?id=1879418&coupon=BFCM5050) (50% OFF For 3 Months + 50 Free Migrations)
+
+💰 **Check out Cloudways pricing:**  
+[View Pricing](https://www.cloudways.com/en/pricing.php?id=1879418&data1=bfcm&data2=Nov)
+
+---
+
 ## Setup Instructions
 
 1. **Navigate to the tutorial folder:**
@@ -86,18 +116,18 @@ The app uses the Gemini API for AI-powered PokAImon generation. To provide your 
 The app includes an `ApiKeyContext` that manages your API key securely in browser storage. Use the `useApiKey` hook to access and include it in API calls:
 
 ```jsx
-import { useApiKey } from '../context/ApiKeyContext';
+import { useApiKey } from "../context/ApiKeyContext";
 
 function YourComponent() {
   const { apiKey } = useApiKey();
 
   const makeApiCall = async () => {
     const res = await fetch(`${API}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         doodle_data: base64,
-        gemini_api_key: apiKey  // Include the API key
+        gemini_api_key: apiKey, // Include the API key
       }),
     });
     // ... handle response
@@ -106,6 +136,7 @@ function YourComponent() {
 ```
 
 The `useApiKey` hook provides:
+
 - `apiKey` - The current API key (or empty string if not set)
 - `updateApiKey(newKey)` - Update the stored API key
 - `clearApiKey()` - Remove the stored API key
@@ -425,10 +456,14 @@ const like = async (id) => {
       )}
       {p.powers && Array.isArray(p.powers) && p.powers.length > 0 && (
         <div className="mt-3 space-y-1">
-          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">Powers:</p>
+          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+            Powers:
+          </p>
           {p.powers.map((power, idx) => (
             <div key={idx} className="text-xs text-gray-600 dark:text-gray-400">
-              <span className="font-medium text-gray-900 dark:text-white">{power.name}</span>
+              <span className="font-medium text-gray-900 dark:text-white">
+                {power.name}
+              </span>
               {power.description && <span> - {power.description}</span>}
             </div>
           ))}

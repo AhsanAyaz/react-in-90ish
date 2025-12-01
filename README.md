@@ -1,6 +1,6 @@
 # React in 90-ish Minutes 🚀
 
-Welcome to **React in 90-ish Minutes** - a hands-on tutorial where you'll learn React by building a real, full-stack application!
+Welcome to **React in 90-ish Minutes** - a 90 minutes crash course on ReactJS, including explanatory slides, a YouTube video tutorial, and a hands-on tutorial where you'll learn React by building a real, full-stack application!
 
 ## 📚 What You'll Learn
 
