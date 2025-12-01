@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Context API - Visual Explanation</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        zoom: 0.95;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #e94560, #ff6b9d, #e94560);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient 3s ease infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes gradient {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #a0a0b0;
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+      }
+
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 80px 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .panel h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .panel h2 .emoji {
+        font-size: 1.5rem;
+      }
+
+      .bad h2 {
+        color: #ff6b6b;
+      }
+      .good h2 {
+        color: #00d9a5;
+      }
+
+      .vs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #e94560;
+      }
+
+      /* Component Tree Styles */
+      .tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .component {
+        background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+        border-radius: 12px;
+        padding: 15px 25px;
+        margin: 10px 0;
+        text-align: center;
+        position: relative;
+        transition: all 0.3s ease;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+      }
+
+      .component.app {
+        background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+      }
+
+      .component.provider {
+        background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+        box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+      }
+
+      .component.consumer {
+        background: linear-gradient(135deg, #00b894 0%, #00d9a5 100%);
+      }
+
+      .component .name {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .component .prop {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 5px;
+      }
+
+      .children {
+        display: flex;
+        gap: 20px;
+        position: relative;
+        padding-top: 20px;
+      }
+
+      .children::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .branch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .connector-line {
+        width: 2px;
+        height: 15px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Prop Flow Animation */
+      .prop-flow {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ffd93d;
+        opacity: 0;
+      }
+
+      .prop-drilling .prop-flow {
+        animation: drillDown 2s ease-in-out infinite;
+      }
+
+      @keyframes drillDown {
+        0% {
+          opacity: 1;
+          top: 0;
+        }
+        25% {
+          opacity: 1;
+          top: 60px;
+        }
+        50% {
+          opacity: 1;
+          top: 120px;
+        }
+        75% {
+          opacity: 1;
+          top: 180px;
+        }
+        100% {
+          opacity: 0;
+          top: 240px;
+        }
+      }
+
+      /* Context Flow */
+      .context-flow {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .context-beam {
+        position: absolute;
+        width: 4px;
+        background: linear-gradient(180deg, #e94560, transparent);
+        opacity: 0;
+        border-radius: 2px;
+      }
+
+      .context-active .context-beam {
+        animation: beamDown 1.5s ease-in-out infinite;
+      }
+
+      @keyframes beamDown {
+        0% {
+          opacity: 0;
+          height: 0;
+        }
+        50% {
+          opacity: 1;
+          height: 100px;
+        }
+        100% {
+          opacity: 0;
+          height: 200px;
+        }
+      }
+
+      /* Controls */
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      button {
+        background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+        color: #fff;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1rem;
+        font-weight: 700;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+      }
+
+      button.secondary {
+        background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+      }
+
+      /* Info Cards */
+      .info-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 30px;
+      }
+
+      .info-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .info-card h3 {
+        color: #e94560;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .info-card p {
+        color: #a0a0b0;
+        line-height: 1.6;
+        font-size: 0.9rem;
+      }
+
+      .info-card code {
+        background: rgba(233, 69, 96, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: #ff6b9d;
+      }
+
+      /* Code Example */
+      .code-example {
+        background: #0d1117;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow-x: auto;
+      }
+
+      .code-example pre {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        color: #e6edf3;
+      }
+
+      .code-example .keyword {
+        color: #ff7b72;
+      }
+      .code-example .function {
+        color: #d2a8ff;
+      }
+      .code-example .string {
+        color: #a5d6ff;
+      }
+      .code-example .component-name {
+        color: #7ee787;
+      }
+      .code-example .comment {
+        color: #8b949e;
+      }
+
+      /* Problem Highlight */
+      .problem {
+        display: none;
+        background: rgba(255, 107, 107, 0.1);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+
+      .problem.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .problem h4 {
+        color: #ff6b6b;
+        margin-bottom: 10px;
+      }
+
+      .problem ul {
+        color: #a0a0b0;
+        padding-left: 20px;
+      }
+
+      .problem li {
+        margin: 5px 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Highlight animation */
+      .highlight {
+        animation: glow 1s ease infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        to {
+          box-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
+        }
+      }
+
+      /* Data badge */
+      .data-badge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #ffd93d;
+        color: #1a1a2e;
+        font-size: 0.7rem;
+        padding: 4px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .show-data .data-badge {
+        opacity: 1;
+      }
+
+      .context-badge {
+        background: #ffd93d;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .show-context-data .context-badge {
+        opacity: 1;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-content: center;
+      }
+
+      .tab {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #fff;
+        padding: 10px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab.active {
+        background: linear-gradient(135deg, #e94560 0%, #ff6b9d 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>React Context API</h1>
+      <p class="subtitle">Solving the Prop Drilling Problem</p>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('comparison')">
+          Comparison
+        </button>
+        <button class="tab" onclick="showTab('code')">Code Example</button>
+      </div>
+
+      <div id="comparison-view">
+        <div class="comparison">
+          <!-- Prop Drilling Side -->
+          <div class="panel bad" id="prop-drilling-panel">
+            <h2><span class="emoji">😰</span> Prop Drilling</h2>
+            <div class="tree prop-drilling" id="prop-tree">
+              <div class="component app">
+                <div class="name">&lt;App /&gt;</div>
+                <div class="prop">user={user}</div>
+                <div class="data-badge">user</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Layout /&gt;</div>
+                <div class="prop">user={user}</div>
+                <div class="data-badge">user</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Header /&gt;</div>
+                <div class="prop">user={user}</div>
+                <div class="data-badge">user</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Navigation /&gt;</div>
+                <div class="prop">user={user}</div>
+                <div class="data-badge">user</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component consumer">
+                <div class="name">&lt;UserMenu /&gt;</div>
+                <div class="prop">Finally uses it! 🎯</div>
+                <div class="data-badge">user</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="vs">VS</div>
+
+          <!-- Context Side -->
+          <div class="panel good" id="context-panel">
+            <h2><span class="emoji">✨</span> Context API</h2>
+            <div class="tree" id="context-tree">
+              <div class="component provider highlight">
+                <div class="name">&lt;UserProvider /&gt;</div>
+                <div class="prop">value={user}</div>
+                <div class="data-badge context-badge">user</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component app">
+                <div class="name">&lt;App /&gt;</div>
+                <div class="prop">No props! 🎉</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Layout /&gt;</div>
+                <div class="prop">No props!</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Header /&gt;</div>
+                <div class="prop">No props!</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component">
+                <div class="name">&lt;Navigation /&gt;</div>
+                <div class="prop">No props!</div>
+              </div>
+              <div class="connector-line"></div>
+              <div class="component consumer">
+                <div class="name">&lt;UserMenu /&gt;</div>
+                <div class="prop">useUser() 🪄</div>
+                <div class="data-badge context-badge">user</div>
+              </div>
+            </div>
+            <svg class="context-flow" viewBox="0 0 400 400">
+              <defs>
+                <linearGradient id="beamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: #e94560; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #e94560; stop-opacity: 0"
+                  />
+                </linearGradient>
+              </defs>
+              <line
+                id="context-line"
+                x1="200"
+                y1="60"
+                x2="200"
+                y2="320"
+                stroke="url(#beamGrad)"
+                stroke-width="4"
+                stroke-dasharray="10,5"
+                opacity="0"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button onclick="showPropDrilling()">Show Prop Drilling</button>
+          <button onclick="showContextFlow()">Show Context Flow</button>
+          <button class="secondary" onclick="reset()">Reset</button>
+        </div>
+
+        <div class="problem" id="problem-box">
+          <h4>❌ Problems with Prop Drilling:</h4>
+          <ul>
+            <li>Every intermediate component must receive and pass the prop</li>
+            <li>Components become tightly coupled</li>
+            <li>Harder to refactor - change one, change all</li>
+            <li>Unnecessary re-renders when prop changes</li>
+            <li>Code becomes verbose and hard to maintain</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="code-view" style="display: none">
+        <div class="code-example">
+          <pre>
+<span class="comment">// 1. Create the Context</span>
+<span class="keyword">const</span> UserContext = <span class="function">createContext</span>(<span class="keyword">null</span>);
+
+<span class="comment">// 2. Create a Provider Component</span>
+<span class="keyword">function</span> <span class="component-name">UserProvider</span>({ children }) {
+  <span class="keyword">const</span> [user, setUser] = <span class="function">useState</span>({ name: <span class="string">'Ahsan'</span> });
+  
+  <span class="keyword">return</span> (
+    &lt;<span class="component-name">UserContext.Provider</span> value={{ user, setUser }}&gt;
+      {children}
+    &lt;/<span class="component-name">UserContext.Provider</span>&gt;
+  );
+}
+
+<span class="comment">// 3. Create a Custom Hook (Best Practice!)</span>
+<span class="keyword">function</span> <span class="function">useUser</span>() {
+  <span class="keyword">const</span> context = <span class="function">useContext</span>(UserContext);
+  <span class="keyword">if</span> (!context) {
+    <span class="keyword">throw new</span> <span class="function">Error</span>(<span class="string">'useUser must be within UserProvider'</span>);
+  }
+  <span class="keyword">return</span> context;
+}
+
+<span class="comment">// 4. Use anywhere in the tree!</span>
+<span class="keyword">function</span> <span class="component-name">UserMenu</span>() {
+  <span class="keyword">const</span> { user } = <span class="function">useUser</span>(); <span class="comment">// Magic! ✨</span>
+  <span class="keyword">return</span> &lt;span&gt;{user.name}&lt;/span&gt;;
+}
+
+<span class="comment">// 5. Wrap your app</span>
+<span class="keyword">function</span> <span class="component-name">App</span>() {
+  <span class="keyword">return</span> (
+    &lt;<span class="component-name">UserProvider</span>&gt;
+      &lt;<span class="component-name">Header</span> /&gt;   <span class="comment">{/* No props needed! */}</span>
+      &lt;<span class="component-name">Content</span> /&gt;
+    &lt;/<span class="component-name">UserProvider</span>&gt;
+  );
+}
+                </pre>
+        </div>
+      </div>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <h3>📦 createContext</h3>
+          <p>
+            Creates a Context object. Pass a default value that's used when a
+            component doesn't have a matching Provider.
+          </p>
+          <p><code>const ThemeContext = createContext('light')</code></p>
+        </div>
+        <div class="info-card">
+          <h3>🎁 Context.Provider</h3>
+          <p>
+            Wraps components that need access to the context value. All children
+            can access the <code>value</code> prop.
+          </p>
+          <p><code>&lt;ThemeContext.Provider value={theme}&gt;</code></p>
+        </div>
+        <div class="info-card">
+          <h3>🪝 useContext</h3>
+          <p>
+            Hook to consume context in functional components. Returns current
+            context value from nearest Provider.
+          </p>
+          <p><code>const theme = useContext(ThemeContext)</code></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showPropDrilling() {
+        reset();
+        const tree = document.getElementById('prop-tree');
+        tree.classList.add('show-data');
+
+        const components = tree.querySelectorAll('.component');
+        components.forEach((comp, i) => {
+          setTimeout(() => {
+            comp.style.transform = 'scale(1.05)';
+            comp.style.boxShadow = '0 0 20px rgba(255, 107, 107, 0.5)';
+            setTimeout(() => {
+              comp.style.transform = 'scale(1)';
+              comp.style.boxShadow = 'none';
+            }, 300);
+          }, i * 400);
+        });
+
+        setTimeout(() => {
+          document.getElementById('problem-box').classList.add('show');
+        }, components.length * 400);
+      }
+
+      function showContextFlow() {
+        reset();
+        const tree = document.getElementById('context-tree');
+        const provider = document.querySelector('#context-tree .provider');
+        const consumer = document.querySelector('#context-tree .consumer');
+        const line = document.getElementById('context-line');
+
+        // Show the context data badges on provider and consumer only
+        tree.classList.add('show-context-data');
+
+        provider.classList.add('highlight');
+
+        setTimeout(() => {
+          line.style.opacity = '1';
+          line.style.animation = 'dashFlow 1s linear infinite';
+        }, 500);
+
+        setTimeout(() => {
+          consumer.classList.add('highlight');
+          consumer.style.boxShadow = '0 0 30px rgba(0, 184, 148, 0.6)';
+        }, 1000);
+      }
+
+      function reset() {
+        document.getElementById('problem-box').classList.remove('show');
+        document.getElementById('prop-tree').classList.remove('show-data');
+        document
+          .getElementById('context-tree')
+          .classList.remove('show-context-data');
+
+        document.querySelectorAll('.component').forEach((comp) => {
+          comp.style.transform = 'scale(1)';
+          comp.style.boxShadow = 'none';
+        });
+
+        const consumer = document.querySelector('#context-tree .consumer');
+        consumer.classList.remove('highlight');
+        consumer.style.boxShadow = 'none';
+
+        const line = document.getElementById('context-line');
+        line.style.opacity = '0';
+        line.style.animation = 'none';
+      }
+
+      function showTab(tab) {
+        document
+          .querySelectorAll('.tab')
+          .forEach((t) => t.classList.remove('active'));
+        event.target.classList.add('active');
+
+        if (tab === 'comparison') {
+          document.getElementById('comparison-view').style.display = 'block';
+          document.getElementById('code-view').style.display = 'none';
+        } else {
+          document.getElementById('comparison-view').style.display = 'none';
+          document.getElementById('code-view').style.display = 'block';
+        }
+      }
+
+      // Add dash animation
+      const style = document.createElement('style');
+      style.textContent = `
+            @keyframes dashFlow {
+                from { stroke-dashoffset: 0; }
+                to { stroke-dashoffset: -30; }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

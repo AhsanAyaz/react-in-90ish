@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reveal Multi Slides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section
+          data-markdown="profiles/ahsan.md"
+          data-separator="^\n---\n$"
+          data-separator-vertical="^\n--\n$"
+        ></section>
+      </div>
+      <div class="slides">
+        
+      </div>
+    </div>
+    <template id="slidesTemplate">
+      <section
+        data-separator="^---$"
+        data-separator-vertical="^--$"
+      ></section>
+    </template>
+    <script type="text/javascript">
+      const params = new URLSearchParams(location.search);
+      const targetMarkdown = decodeURIComponent(params.get('md'));
+      const targetTitle = decodeURIComponent(params.get('title'));
+      const template = document.querySelector('#slidesTemplate');
+      const templateClone = template.cloneNode(true);
+      const content = templateClone.content;
+      const section = content.firstElementChild;
+      console.log({content})
+      section.setAttribute('data-markdown', `content/${targetMarkdown}`);
+      const slidesContainer = document.querySelector('.slides');
+      slidesContainer.appendChild(section);
+      document.title = targetTitle;
+    </script>
+  </body>
+</html>

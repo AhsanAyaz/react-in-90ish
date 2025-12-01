@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React 19 - Suspense & New Features</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        zoom: 0.95;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0a0a0f 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #00d9ff, #00ff88, #00d9ff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient 3s ease infinite;
+        margin-bottom: 10px;
+      }
+
+      .version-badge {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .version-badge span {
+        background: linear-gradient(135deg, #00d9ff, #00ff88);
+        color: #0a0a0f;
+        padding: 5px 20px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      @keyframes gradient {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #8892b0;
+        padding: 12px 25px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
+
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      .tab.active {
+        background: linear-gradient(135deg, #00d9ff, #00ff88);
+        color: #0a0a0f;
+        border-color: transparent;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Suspense Demo */
+      .suspense-demo {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .suspense-demo h2 {
+        text-align: center;
+        color: #00d9ff;
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+      }
+
+      .app-preview {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .app-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 20px;
+        color: #fff;
+      }
+
+      .app-header h3 {
+        font-size: 1.2rem;
+      }
+
+      .app-content {
+        padding: 30px;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background: #f8f9fa;
+        color: #333;
+      }
+
+      .content-section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .content-section h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      /* Skeleton Loading */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #e0e0e0 25%,
+          #f0f0f0 50%,
+          #e0e0e0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+      }
+
+      .skeleton-text {
+        height: 16px;
+        margin-bottom: 10px;
+      }
+
+      .skeleton-text:last-child {
+        width: 60%;
+      }
+
+      .skeleton-title {
+        height: 24px;
+        width: 40%;
+        margin-bottom: 15px;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+
+      /* Spinner */
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e0e0e0;
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .demo-controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .demo-btn {
+        background: linear-gradient(135deg, #00d9ff, #00ff88);
+        color: #0a0a0f;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .demo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+      }
+
+      .demo-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      /* Code Display */
+      .code-display {
+        background: #0d1117;
+        border-radius: 12px;
+        padding: 25px;
+        max-width: 700px;
+        margin: 30px auto 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+      }
+
+      .code-display .keyword {
+        color: #ff7b72;
+      }
+      .code-display .component {
+        color: #7ee787;
+      }
+      .code-display .string {
+        color: #a5d6ff;
+      }
+      .code-display .function {
+        color: #d2a8ff;
+      }
+      .code-display .comment {
+        color: #8b949e;
+      }
+
+      /* Feature Cards */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+      }
+
+      .feature-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(0, 217, 255, 0.5);
+      }
+
+      .feature-card h3 {
+        color: #00d9ff;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .feature-card p {
+        color: #8892b0;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .feature-card .code-snippet {
+        background: #0d1117;
+        border-radius: 8px;
+        padding: 15px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        overflow-x: auto;
+      }
+
+      /* Timeline */
+      .timeline {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        padding-left: 40px;
+      }
+
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, #00d9ff, #00ff88);
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-bottom: 40px;
+      }
+
+      .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -33px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        background: #00d9ff;
+        border-radius: 50%;
+        border: 3px solid #0a0a0f;
+      }
+
+      .timeline-item h3 {
+        color: #00d9ff;
+        margin-bottom: 10px;
+      }
+
+      .timeline-item p {
+        color: #8892b0;
+        line-height: 1.6;
+      }
+
+      /* Optimistic UI Demo */
+      .optimistic-demo {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .message-list {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        min-height: 200px;
+        color: #333;
+      }
+
+      .message {
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        background: #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      .message.sending {
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        opacity: 0.7;
+      }
+
+      .message.sending::after {
+        content: ' (Sending...)';
+        color: #4caf50;
+        font-style: italic;
+        font-size: 0.85rem;
+      }
+
+      .message-form {
+        display: flex;
+        gap: 10px;
+      }
+
+      .message-form input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 1rem;
+        caret-color: #00d9ff;
+        z-index: 10;
+        position: relative;
+      }
+
+      .message-form input:focus {
+        outline: none;
+        border-color: #00d9ff;
+      }
+
+      .message-form button {
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #00d9ff, #00ff88);
+        color: #0a0a0f;
+        border: none;
+        border-radius: 25px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* Server Component Visual */
+      .server-client-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 30px;
+      }
+
+      .split-panel {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .split-panel.server {
+        border-color: rgba(0, 217, 255, 0.3);
+      }
+
+      .split-panel.client {
+        border-color: rgba(255, 107, 107, 0.3);
+      }
+
+      .split-panel h4 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .split-panel.server h4 {
+        color: #00d9ff;
+      }
+      .split-panel.client h4 {
+        color: #ff6b6b;
+      }
+
+      .split-panel ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .split-panel li {
+        padding: 8px 0;
+        color: #8892b0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .split-panel li::before {
+        content: '✓';
+        color: #00ff88;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>React 19 Features</h1>
+      <div class="version-badge">
+        <span>🚀 The Future of React</span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('suspense')">
+          Suspense
+        </button>
+        <button class="tab" onclick="showTab('use')">use() Hook</button>
+        <button class="tab" onclick="showTab('optimistic')">
+          useOptimistic
+        </button>
+        <button class="tab" onclick="showTab('actions')">Server Actions</button>
+        <button class="tab" onclick="showTab('compiler')">
+          React Compiler
+        </button>
+      </div>
+
+      <!-- Suspense Tab -->
+      <div id="suspense" class="tab-content active">
+        <div class="suspense-demo">
+          <h2>Suspense: Declarative Loading States</h2>
+
+          <div class="demo-controls">
+            <button class="demo-btn" onclick="simulateLoading()">
+              Simulate Load
+            </button>
+            <button class="demo-btn secondary" onclick="resetSuspense()">
+              Reset
+            </button>
+          </div>
+
+          <div class="app-preview">
+            <div class="app-header">
+              <h3>🚀 My App</h3>
+            </div>
+            <div class="app-content" id="suspense-content">
+              <div class="content-section" id="profile-section">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+              <div class="content-section" id="posts-section">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-display">
+            <pre>&lt;<span class="component">Suspense</span> fallback={&lt;<span class="component">Skeleton</span> /&gt;}&gt;
+  &lt;<span class="component">UserProfile</span> /&gt;  <span class="comment">{/* Suspends while loading */}</span>
+&lt;/<span class="component">Suspense</span>&gt;
+
+&lt;<span class="component">Suspense</span> fallback={&lt;<span class="component">Skeleton</span> /&gt;}&gt;
+  &lt;<span class="component">UserPosts</span> /&gt;    <span class="comment">{/* Independent loading */}</span>
+&lt;/<span class="component">Suspense</span>&gt;</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- use() Hook Tab -->
+      <div id="use" class="tab-content">
+        <div class="suspense-demo">
+          <h2>The use() Hook - Read Promises in Components!</h2>
+
+          <div class="features-grid">
+            <div class="feature-card">
+              <h3>📖 Read Promises</h3>
+              <p>
+                Read promise values directly in your component. React suspends
+                until the promise resolves!
+              </p>
+              <div class="code-display">
+                <pre><span class="keyword">function</span> <span class="component">UserProfile</span>({ userPromise }) {
+  <span class="keyword">const</span> user = <span class="function">use</span>(userPromise);
+  <span class="keyword">return</span> &lt;h1&gt;{user.name}&lt;/h1&gt;;
+}</pre>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <h3>🔀 Conditional Context</h3>
+              <p>
+                Unlike hooks, use() can be called conditionally after early
+                returns!
+              </p>
+              <div class="code-display">
+                <pre><span class="keyword">function</span> <span class="component">Theme</span>({ skip }) {
+  <span class="keyword">if</span> (skip) <span class="keyword">return null</span>;
+
+  <span class="comment">// Can call after condition!</span>
+  <span class="keyword">const</span> theme = <span class="function">use</span>(ThemeContext);
+  <span class="keyword">return</span> &lt;div&gt;{theme}&lt;/div&gt;;
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- useOptimistic Tab -->
+      <div id="optimistic" class="tab-content">
+        <div class="suspense-demo">
+          <h2>useOptimistic - Instant UI Feedback</h2>
+
+          <div class="optimistic-demo">
+            <div class="message-list" id="message-list">
+              <div class="message">Hello! 👋</div>
+              <div class="message">Welcome to React 19!</div>
+            </div>
+
+            <form class="message-form" onsubmit="sendOptimisticMessage(event)">
+              <input
+                type="text"
+                id="message-input"
+                placeholder="Type a message..."
+              />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+
+          <div class="code-display" style="margin-top: 30px">
+            <pre><span class="keyword">const</span> [optimisticMsgs, addOptimistic] = <span class="function">useOptimistic</span>(
+  messages,
+  (state, newMsg) => [...state, { 
+    text: newMsg, 
+    sending: <span class="keyword">true</span> 
+  }]
+);
+
+<span class="keyword">async function</span> <span class="function">handleSend</span>(formData) {
+  <span class="function">addOptimistic</span>(formData.get(<span class="string">'message'</span>)); <span class="comment">// Instant!</span>
+  <span class="keyword">await</span> <span class="function">sendToServer</span>(formData);        <span class="comment">// Then sync</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Server Actions Tab -->
+      <div id="actions" class="tab-content">
+        <div class="suspense-demo">
+          <h2>Server Components & Actions</h2>
+
+          <div class="server-client-split">
+            <div class="split-panel server">
+              <h4>🖥️ Server Components</h4>
+              <ul>
+                <li>Direct database access</li>
+                <li>Zero JavaScript to client</li>
+                <li>async/await in components</li>
+                <li>Smaller bundle sizes</li>
+                <li>Better SEO & performance</li>
+              </ul>
+            </div>
+
+            <div class="split-panel client">
+              <h4>🌐 Client Components</h4>
+              <ul>
+                <li>Interactivity & events</li>
+                <li>useState, useEffect</li>
+                <li>Browser APIs</li>
+                <li>Third-party libraries</li>
+                <li>Add "use client" directive</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="code-display" style="margin-top: 30px">
+            <pre><span class="comment">// Server Component (default)</span>
+<span class="keyword">async function</span> <span class="component">ProductPage</span>({ id }) {
+  <span class="keyword">const</span> product = <span class="keyword">await</span> db.products.<span class="function">find</span>(id);
+  <span class="keyword">return</span> &lt;h1&gt;{product.name}&lt;/h1&gt;;
+}
+
+<span class="comment">// Server Action</span>
+<span class="string">'use server'</span>;
+<span class="keyword">async function</span> <span class="function">addToCart</span>(productId) {
+  <span class="keyword">await</span> db.cart.<span class="function">add</span>({ productId });
+  <span class="function">revalidatePath</span>(<span class="string">'/cart'</span>);
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compiler Tab -->
+      <div id="compiler" class="tab-content">
+        <div class="suspense-demo">
+          <h2>React Compiler (Forget)</h2>
+          <p style="text-align: center; color: #8892b0; margin-bottom: 30px">
+            Automatic memoization - no more useMemo/useCallback everywhere!
+          </p>
+
+          <div class="features-grid">
+            <div class="feature-card">
+              <h3>❌ Before (Manual)</h3>
+              <div class="code-display">
+                <pre><span class="keyword">function</span> <span class="component">Component</span>({ items }) {
+  <span class="keyword">const</span> filtered = <span class="function">useMemo</span>(() => 
+    items.<span class="function">filter</span>(i => i.active)
+  , [items]);
+  
+  <span class="keyword">const</span> handleClick = <span class="function">useCallback</span>(() => {
+    console.<span class="function">log</span>(<span class="string">'clicked'</span>);
+  }, []);
+  
+  <span class="keyword">return</span> &lt;<span class="component">Child</span> 
+    items={filtered} 
+    onClick={handleClick} 
+  /&gt;;
+}</pre>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <h3>✅ After (Automatic)</h3>
+              <div class="code-display">
+                <pre><span class="keyword">function</span> <span class="component">Component</span>({ items }) {
+  <span class="comment">// Just write normal code!</span>
+  <span class="keyword">const</span> filtered = items.<span class="function">filter</span>(
+    i => i.active
+  );
+  
+  <span class="keyword">const</span> handleClick = () => {
+    console.<span class="function">log</span>(<span class="string">'clicked'</span>);
+  };
+  
+  <span class="comment">// Compiler memoizes automatically!</span>
+  <span class="keyword">return</span> &lt;<span class="component">Child</span> 
+    items={filtered} 
+    onClick={handleClick} 
+  /&gt;;
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline" style="margin-top: 40px">
+            <div class="timeline-item">
+              <h3>🎯 What it does</h3>
+              <p>
+                Analyzes your code at build time and automatically adds
+                memoization where needed.
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>🚀 Benefits</h3>
+              <p>
+                Cleaner code, fewer bugs from missing dependencies, better
+                performance by default.
+              </p>
+            </div>
+            <div class="timeline-item">
+              <h3>📦 Adoption</h3>
+              <p>Opt-in per file or project. Works with existing React code.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showTab(tabName) {
+        document
+          .querySelectorAll('.tab')
+          .forEach((t) => t.classList.remove('active'));
+        document
+          .querySelectorAll('.tab-content')
+          .forEach((c) => c.classList.remove('active'));
+
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      // Suspense Demo
+      function simulateLoading() {
+        const profile = document.getElementById('profile-section');
+        const posts = document.getElementById('posts-section');
+
+        // Reset to loading
+        profile.innerHTML = `
+                <div class="spinner"></div>
+                <p style="text-align: center; color: #888;">Loading profile...</p>
+            `;
+
+        posts.innerHTML = `
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            `;
+
+        // Load profile first
+        setTimeout(() => {
+          profile.innerHTML = `
+                    <h4>👤 John Doe</h4>
+                    <p>Senior React Developer</p>
+                    <p>San Francisco, CA</p>
+                `;
+          profile.style.animation = 'fadeIn 0.3s ease';
+        }, 1500);
+
+        // Load posts second
+        setTimeout(() => {
+          posts.innerHTML = `
+                    <h4>📝 Recent Posts</h4>
+                    <p>• Getting Started with React 19</p>
+                    <p>• Understanding Server Components</p>
+                    <p>• The Power of useOptimistic</p>
+                `;
+          posts.style.animation = 'fadeIn 0.3s ease';
+        }, 3000);
+      }
+
+      function resetSuspense() {
+        const profile = document.getElementById('profile-section');
+        const posts = document.getElementById('posts-section');
+
+        profile.innerHTML = `
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            `;
+
+        posts.innerHTML = `
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            `;
+      }
+
+      // Optimistic UI Demo
+      function sendOptimisticMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('message-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        const list = document.getElementById('message-list');
+
+        // Add optimistic message immediately
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message sending';
+        msgDiv.textContent = message;
+        list.appendChild(msgDiv);
+
+        input.value = '';
+
+        // Simulate server response
+        setTimeout(() => {
+          msgDiv.classList.remove('sending');
+        }, 2000);
+      }
+    </script>
+  </body>
+</html>

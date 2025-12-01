@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Hooks - Visual Guide</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        zoom: 0.95;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0c0c1d 0%,
+          #1a1a3a 50%,
+          #0c0c1d 100%
+        );
+        min-height: 100vh;
+        color: #fff;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient 3s ease infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes gradient {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #8892b0;
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+      }
+
+      /* Hook Cards Grid */
+      .hooks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .hook-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .hook-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(102, 126, 234, 0.5);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+      }
+
+      .hook-card.active {
+        border-color: #667eea;
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+      }
+
+      .hook-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .hook-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .hook-icon.state {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+      .hook-icon.effect {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+      }
+      .hook-icon.ref {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+      }
+      .hook-icon.memo {
+        background: linear-gradient(135deg, #43e97b, #38f9d7);
+      }
+      .hook-icon.callback {
+        background: linear-gradient(135deg, #fa709a, #fee140);
+      }
+      .hook-icon.reducer {
+        background: linear-gradient(135deg, #a8edea, #fed6e3);
+      }
+
+      .hook-name {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .hook-purpose {
+        color: #8892b0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .hook-syntax {
+        background: #0d1117;
+        border-radius: 10px;
+        padding: 15px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        overflow-x: auto;
+      }
+
+      .hook-syntax .keyword {
+        color: #ff7b72;
+      }
+      .hook-syntax .function {
+        color: #d2a8ff;
+      }
+      .hook-syntax .string {
+        color: #a5d6ff;
+      }
+      .hook-syntax .number {
+        color: #79c0ff;
+      }
+      .hook-syntax .comment {
+        color: #8b949e;
+      }
+
+      /* Interactive Demo Area */
+      .demo-section {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 40px;
+      }
+
+      .demo-section h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #667eea;
+        font-size: 1.5rem;
+      }
+
+      /* useState Demo */
+      .state-demo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .counter-display {
+        font-size: 5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: transform 0.2s ease;
+      }
+
+      .counter-display.bump {
+        animation: bump 0.2s ease;
+      }
+
+      @keyframes bump {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+      }
+
+      .demo-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .demo-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .demo-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .demo-btn:active {
+        transform: scale(0.95);
+      }
+
+      .state-explanation {
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 500px;
+        text-align: center;
+      }
+
+      .state-explanation code {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 8px;
+        border-radius: 4px;
+        color: #d2a8ff;
+      }
+
+      /* useEffect Demo */
+      .effect-demo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .timer-display {
+        font-size: 4rem;
+        font-family: 'JetBrains Mono', monospace;
+        color: #f093fb;
+      }
+
+      .effect-logs {
+        background: #0d1117;
+        border-radius: 12px;
+        padding: 20px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+      }
+
+      .log-entry {
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .log-entry.mount {
+        color: #43e97b;
+      }
+      .log-entry.update {
+        color: #4facfe;
+      }
+      .log-entry.cleanup {
+        color: #f5576c;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Comparison Tables */
+      .comparison-section {
+        margin-top: 40px;
+      }
+
+      .comparison-section h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #667eea;
+        font-size: 1.5rem;
+      }
+
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 15px 20px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .comparison-table th {
+        background: rgba(102, 126, 234, 0.2);
+        color: #667eea;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+      }
+
+      .comparison-table td {
+        color: #c9d1d9;
+        font-size: 0.9rem;
+      }
+
+      .comparison-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .comparison-table code {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(102, 126, 234, 0.2);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      /* Rules Section */
+      .rules-section {
+        margin-top: 40px;
+      }
+
+      .rules-section h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #f5576c;
+        font-size: 1.5rem;
+      }
+
+      .rules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .rule-card {
+        background: rgba(245, 87, 108, 0.1);
+        border: 1px solid rgba(245, 87, 108, 0.3);
+        border-radius: 16px;
+        padding: 25px;
+      }
+
+      .rule-card h3 {
+        color: #f5576c;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .rule-card p {
+        color: #8892b0;
+        line-height: 1.6;
+        font-size: 0.9rem;
+      }
+
+      .rule-card .example {
+        background: #0d1117;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+      }
+
+      .rule-card .wrong {
+        color: #f5576c;
+      }
+      .rule-card .right {
+        color: #43e97b;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+
+      .tab {
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        color: #8892b0;
+        padding: 12px 30px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
+
+      .tab:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      .tab.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>React Hooks</h1>
+      <p class="subtitle">
+        Master the essential hooks for modern React development
+      </p>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('overview')">
+          Overview
+        </button>
+        <button class="tab" onclick="showTab('useState')">useState Demo</button>
+        <button class="tab" onclick="showTab('useEffect')">
+          useEffect Demo
+        </button>
+        <button class="tab" onclick="showTab('rules')">Rules</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div id="overview" class="tab-content active">
+        <div class="hooks-grid">
+          <!-- useState -->
+          <div class="hook-card" onclick="showTab('useState')">
+            <div class="hook-header">
+              <div class="hook-icon state">📦</div>
+              <span class="hook-name">useState</span>
+            </div>
+            <p class="hook-purpose">
+              Add state to functional components. Returns current value and a
+              setter function.
+            </p>
+            <div class="hook-syntax">
+              <span class="keyword">const</span> [count, setCount] =
+              <span class="function">useState</span>(<span class="number"
+                >0</span
+              >);
+            </div>
+          </div>
+
+          <!-- useEffect -->
+          <div class="hook-card" onclick="showTab('useEffect')">
+            <div class="hook-header">
+              <div class="hook-icon effect">⚡</div>
+              <span class="hook-name">useEffect</span>
+            </div>
+            <p class="hook-purpose">
+              Handle side effects: data fetching, subscriptions, DOM
+              manipulation.
+            </p>
+            <div class="hook-syntax">
+              <span class="function">useEffect</span>(() => {<br />
+              &nbsp;&nbsp;<span class="comment">// effect</span><br />
+              &nbsp;&nbsp;<span class="keyword">return</span> () => {
+              <span class="comment">/* cleanup */</span> };<br />
+              }, [deps]);
+            </div>
+          </div>
+
+          <!-- useRef -->
+          <div class="hook-card">
+            <div class="hook-header">
+              <div class="hook-icon ref">🎯</div>
+              <span class="hook-name">useRef</span>
+            </div>
+            <p class="hook-purpose">
+              Persist values across renders. Access DOM elements directly.
+            </p>
+            <div class="hook-syntax">
+              <span class="keyword">const</span> inputRef =
+              <span class="function">useRef</span>(<span class="keyword"
+                >null</span
+              >);<br />
+              inputRef.<span class="function">current</span>.<span
+                class="function"
+                >focus</span
+              >();
+            </div>
+          </div>
+
+          <!-- useMemo -->
+          <div class="hook-card">
+            <div class="hook-header">
+              <div class="hook-icon memo">🧠</div>
+              <span class="hook-name">useMemo</span>
+            </div>
+            <p class="hook-purpose">
+              Cache expensive calculations. Only recalculate when dependencies
+              change.
+            </p>
+            <div class="hook-syntax">
+              <span class="keyword">const</span> result =
+              <span class="function">useMemo</span>(() => {<br />
+              &nbsp;&nbsp;<span class="keyword">return</span> expensiveCalc(a,
+              b);<br />
+              }, [a, b]);
+            </div>
+          </div>
+
+          <!-- useCallback -->
+          <div class="hook-card">
+            <div class="hook-header">
+              <div class="hook-icon callback">🔗</div>
+              <span class="hook-name">useCallback</span>
+            </div>
+            <p class="hook-purpose">
+              Cache function references. Prevent unnecessary child re-renders.
+            </p>
+            <div class="hook-syntax">
+              <span class="keyword">const</span> handleClick =
+              <span class="function">useCallback</span>(() => {<br />
+              &nbsp;&nbsp;console.<span class="function">log</span
+              >(value);<br />
+              }, [value]);
+            </div>
+          </div>
+
+          <!-- useReducer -->
+          <div class="hook-card">
+            <div class="hook-header">
+              <div class="hook-icon reducer">🔄</div>
+              <span class="hook-name">useReducer</span>
+            </div>
+            <p class="hook-purpose">
+              Complex state logic. Like useState but with a reducer pattern.
+            </p>
+            <div class="hook-syntax">
+              <span class="keyword">const</span> [state, dispatch] =
+              <span class="function">useReducer</span>(<br />
+              &nbsp;&nbsp;reducer, initialState<br />
+              );
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-section">
+          <h2>Quick Comparison</h2>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Hook</th>
+                <th>Use Case</th>
+                <th>Causes Re-render?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>useState</code></td>
+                <td>Simple state management</td>
+                <td>✅ Yes</td>
+              </tr>
+              <tr>
+                <td><code>useEffect</code></td>
+                <td>Side effects (API, DOM, timers)</td>
+                <td>❌ No (runs after)</td>
+              </tr>
+              <tr>
+                <td><code>useRef</code></td>
+                <td>DOM refs, mutable values</td>
+                <td>❌ No</td>
+              </tr>
+              <tr>
+                <td><code>useMemo</code></td>
+                <td>Expensive calculations</td>
+                <td>❌ No (caches value)</td>
+              </tr>
+              <tr>
+                <td><code>useCallback</code></td>
+                <td>Function memoization</td>
+                <td>❌ No (caches function)</td>
+              </tr>
+              <tr>
+                <td><code>useReducer</code></td>
+                <td>Complex state logic</td>
+                <td>✅ Yes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- useState Demo Tab -->
+      <div id="useState" class="tab-content">
+        <div class="demo-section">
+          <h2>useState in Action</h2>
+          <div class="state-demo">
+            <div class="counter-display" id="counter">0</div>
+            <div class="demo-buttons">
+              <button class="demo-btn" onclick="decrement()">−</button>
+              <button class="demo-btn" onclick="increment()">+</button>
+            </div>
+            <div class="state-explanation">
+              <p>Click the buttons to see <code>useState</code> in action!</p>
+              <p style="margin-top: 10px; color: #667eea">
+                <code>const [count, setCount] = useState(0)</code>
+              </p>
+              <p style="margin-top: 10px; font-size: 0.85rem; color: #8892b0">
+                Each click calls <code>setCount(prev => prev ± 1)</code>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- useEffect Demo Tab -->
+      <div id="useEffect" class="tab-content">
+        <div class="demo-section">
+          <h2>useEffect Lifecycle</h2>
+          <div class="effect-demo">
+            <div class="timer-display" id="timer">00:00</div>
+            <div class="demo-buttons">
+              <button
+                class="demo-btn"
+                onclick="startTimer()"
+                style="font-size: 1rem"
+              >
+                ▶
+              </button>
+              <button
+                class="demo-btn"
+                onclick="stopTimer()"
+                style="font-size: 1rem"
+              >
+                ⏹
+              </button>
+              <button
+                class="demo-btn"
+                onclick="resetTimer()"
+                style="font-size: 1rem"
+              >
+                ↺
+              </button>
+            </div>
+            <div class="effect-logs" id="effect-logs">
+              <div class="log-entry mount">
+                🟢 Component mounted - useEffect(() => {}, []) ran
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules Tab -->
+      <div id="rules" class="tab-content">
+        <div class="rules-section">
+          <h2>⚠️ Rules of Hooks</h2>
+          <div class="rules-grid">
+            <div class="rule-card">
+              <h3>🔝 Only Call at Top Level</h3>
+              <p>
+                Don't call Hooks inside loops, conditions, or nested functions.
+              </p>
+              <div class="example">
+                <span class="wrong">// ❌ Wrong</span><br />
+                if (condition) {<br />
+                &nbsp;&nbsp;const [x, setX] = useState(0);<br />
+                }<br /><br />
+                <span class="right">// ✅ Correct</span><br />
+                const [x, setX] = useState(0);<br />
+                if (condition) { /* use x */ }
+              </div>
+            </div>
+
+            <div class="rule-card">
+              <h3>⚛️ Only Call from React Functions</h3>
+              <p>
+                Call Hooks from React function components or custom Hooks only.
+              </p>
+              <div class="example">
+                <span class="wrong">// ❌ Wrong</span><br />
+                function regularJS() {<br />
+                &nbsp;&nbsp;useState(0); // Error!<br />
+                }<br /><br />
+                <span class="right">// ✅ Correct</span><br />
+                function ReactComponent() {<br />
+                &nbsp;&nbsp;const [x, setX] = useState(0);<br />
+                }
+              </div>
+            </div>
+
+            <div class="rule-card">
+              <h3>📝 Include All Dependencies</h3>
+              <p>
+                Every value from component scope used in effect must be in deps
+                array.
+              </p>
+              <div class="example">
+                <span class="wrong">// ❌ Wrong</span><br />
+                useEffect(() => {<br />
+                &nbsp;&nbsp;console.log(count);<br />
+                }, []); // Missing 'count'<br /><br />
+                <span class="right">// ✅ Correct</span><br />
+                useEffect(() => {<br />
+                &nbsp;&nbsp;console.log(count);<br />
+                }, [count]);
+              </div>
+            </div>
+
+            <div class="rule-card">
+              <h3>🔄 Functional Updates for State</h3>
+              <p>When new state depends on previous, use functional form.</p>
+              <div class="example">
+                <span class="wrong">// ❌ Might not work</span><br />
+                setCount(count + 1);<br />
+                setCount(count + 1); // Still +1!<br /><br />
+                <span class="right">// ✅ Always works</span><br />
+                setCount(prev => prev + 1);<br />
+                setCount(prev => prev + 1); // +2!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Tab switching
+      function showTab(tabName) {
+        document
+          .querySelectorAll('.tab')
+          .forEach((t) => t.classList.remove('active'));
+        document
+          .querySelectorAll('.tab-content')
+          .forEach((c) => c.classList.remove('active'));
+
+        document.querySelector(`#${tabName}`).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      // useState Demo
+      let count = 0;
+
+      function increment() {
+        count++;
+        updateCounter();
+      }
+
+      function decrement() {
+        count--;
+        updateCounter();
+      }
+
+      function updateCounter() {
+        const display = document.getElementById('counter');
+        display.textContent = count;
+        display.classList.add('bump');
+        setTimeout(() => display.classList.remove('bump'), 200);
+      }
+
+      // useEffect Demo
+      let seconds = 0;
+      let timerInterval = null;
+
+      function startTimer() {
+        if (timerInterval) return;
+
+        addLog('🔵 Effect started - setInterval created', 'update');
+
+        timerInterval = setInterval(() => {
+          seconds++;
+          updateTimerDisplay();
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (!timerInterval) return;
+
+        clearInterval(timerInterval);
+        timerInterval = null;
+        addLog('🔴 Cleanup ran - clearInterval called', 'cleanup');
+      }
+
+      function resetTimer() {
+        stopTimer();
+        seconds = 0;
+        updateTimerDisplay();
+        addLog('🟢 Component reset - state cleared', 'mount');
+      }
+
+      function updateTimerDisplay() {
+        const mins = Math.floor(seconds / 60)
+          .toString()
+          .padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').textContent = `${mins}:${secs}`;
+      }
+
+      function addLog(message, type) {
+        const logs = document.getElementById('effect-logs');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logs.appendChild(entry);
+        logs.scrollTop = logs.scrollHeight;
+      }
+    </script>
+  </body>
+</html>

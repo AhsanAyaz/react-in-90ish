@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Component Tree & Data Flow</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+       zoom: 0.9;
+      }
+      body {
+        font-family: 'Outfit', sans-serif;
+        background: radial-gradient(circle at bottom left, #1a1a2e, #0f0f1a);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      h1 {
+        font-size: 3rem;
+        background: linear-gradient(90deg, #ff6b6b, #feca57);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 50px;
+        text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+      }
+
+      .tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 60px;
+        position: relative;
+      }
+
+      .node {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        position: relative;
+        transition: all 0.3s;
+        z-index: 2;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        font-size: 1.1rem;
+        color: #ddd;
+      }
+
+      .row {
+        display: flex;
+        gap: 120px;
+      }
+
+      /* Connecting lines */
+      .tree::before {
+        content: '';
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        width: 2px;
+        height: 160px;
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.05)
+        );
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+
+      /* Horizontal connector for row 1 */
+      .row-connector {
+        position: absolute;
+        top: 130px; /* Halfway between root and row 1 */
+        left: 50%;
+        width: 220px; /* Distance between centers of children */
+        height: 2px;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-50%);
+        z-index: 1;
+      }
+      /* Vertical drops for row 1 */
+      .row-connector::before,
+      .row-connector::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .row-connector::before {
+        left: 0;
+      }
+      .row-connector::after {
+        right: 0;
+      }
+
+      .controls {
+        margin-top: 80px;
+        display: flex;
+        gap: 30px;
+      }
+
+      button {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        font-family: 'Outfit', sans-serif;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-props {
+        background: linear-gradient(135deg, #61dafb, #21a1f1);
+        color: #121212;
+      }
+      .btn-old {
+        background: linear-gradient(135deg, #ff6b6b, #ee5253);
+        color: white;
+      }
+      .btn-new {
+        background: linear-gradient(135deg, #1dd1a1, #10ac84);
+        color: white;
+      }
+
+      button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      }
+      button:active {
+        transform: scale(0.95);
+      }
+
+      /* Animations */
+      .flash-old {
+        animation: flashRed 1.5s ease; /* Slower */
+      }
+      .flash-new {
+        animation: flashGreen 1.5s ease; /* Slower */
+      }
+
+      .prop-particle {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: #ffd700;
+        border-radius: 50%;
+        z-index: 10;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        box-shadow: 0 0 15px #ffd700;
+      }
+
+      @keyframes flashRed {
+        0% {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+        20% {
+          background: rgba(255, 107, 107, 0.2);
+          border-color: #ff6b6b;
+          box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
+        }
+        100% {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+      }
+      @keyframes flashGreen {
+        0% {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+        20% {
+          background: rgba(29, 209, 161, 0.2);
+          border-color: #1dd1a1;
+          box-shadow: 0 0 30px rgba(29, 209, 161, 0.4);
+        }
+        100% {
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Component Tree</h1>
+
+    <div class="tree">
+      <div class="node" id="root">
+        Root
+        <div class="prop-particle" id="p-root"></div>
+      </div>
+
+      <div class="row-connector"></div>
+
+      <div class="row">
+        <div class="node" id="child1">
+          Nav
+          <div class="prop-particle" id="p-c1"></div>
+        </div>
+        <div class="node" id="child2">
+          List
+          <div class="prop-particle" id="p-c2"></div>
+        </div>
+      </div>
+
+      <!-- Simplified structure for visuals -->
+      <div class="row" style="gap: 200px; margin-top: -20px">
+        <div style="width: 100px"></div>
+        <div class="row" style="gap: 40px; position: relative">
+          <!-- Connector for gchildren -->
+          <div
+            style="
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              width: 2px;
+              height: 30px;
+              background: rgba(255, 255, 255, 0.2);
+              transform: translateX(-50%);
+            "
+          ></div>
+          <div
+            style="
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              width: 140px;
+              height: 2px;
+              background: rgba(255, 255, 255, 0.2);
+              transform: translateX(-50%);
+            "
+          ></div>
+          <div
+            style="
+              position: absolute;
+              top: -30px;
+              left: -20px;
+              width: 2px;
+              height: 30px;
+              background: rgba(255, 255, 255, 0.2);
+            "
+          ></div>
+          <div
+            style="
+              position: absolute;
+              top: -30px;
+              right: -20px;
+              width: 2px;
+              height: 30px;
+              background: rgba(255, 255, 255, 0.2);
+            "
+          ></div>
+
+          <div class="node" id="gchild1">Item 1</div>
+          <div class="node" id="gchild2">Item 2</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-props" onclick="animateProps()">Flow Props</button>
+      <button class="btn-old" onclick="renderOld()">Re-render (Classic)</button>
+      <button class="btn-new" onclick="renderNew()">
+        Re-render (Compiler)
+      </button>
+    </div>
+
+    <script>
+      function wait(ms) {
+        return new Promise((r) => setTimeout(r, ms));
+      }
+
+      async function animateProps() {
+        const pRoot = document.getElementById('p-root');
+        const pC2 = document.getElementById('p-c2');
+
+        // Reset
+        pRoot.style.display = 'block';
+        pRoot.style.top = '0';
+        pC2.style.display = 'none';
+
+        // Animate down to child2
+        pRoot.animate(
+          [
+            { top: '0px' },
+            { top: '160px' }, // Distance to next row
+          ],
+          { duration: 1000, fill: 'forwards', easing: 'ease-in-out' }
+        ); // Slower
+
+        await wait(1000);
+        pRoot.style.display = 'none';
+        pC2.style.display = 'block';
+        pC2.style.top = '0';
+
+        // Animate down to gchild1
+        pC2.animate([{ top: '0px' }, { top: '160px' }], {
+          duration: 1000,
+          fill: 'forwards',
+          easing: 'ease-in-out',
+        }); // Slower
+
+        await wait(1000);
+        pC2.style.display = 'none';
+      }
+
+      async function renderOld() {
+        const nodes = ['root', 'child1', 'child2', 'gchild1', 'gchild2'];
+        nodes.forEach((id) => {
+          document.getElementById(id).classList.add('flash-old');
+        });
+        await wait(1500);
+        nodes.forEach((id) => {
+          document.getElementById(id).classList.remove('flash-old');
+        });
+      }
+
+      async function renderNew() {
+        const target = document.getElementById('gchild1');
+        target.classList.add('flash-new');
+        await wait(1500);
+        target.classList.remove('flash-new');
+      }
+    </script>
+  </body>
+</html>
