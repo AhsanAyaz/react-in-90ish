@@ -1,14 +1,14 @@
-# React 19 Workshop - PokAImon Generator 🎨
+# React 19 Workshop - AImon Generator 🎨
 
 Welcome to the React 19 hands-on workshop! In this 90-minute tutorial, you'll build a complete React application from scratch, learning modern React patterns and React 19 features.
 
 ## What You'll Build
 
-A PokAImon Generator app where you can:
+A AImon Generator app where you can:
 
-- Draw your own Pokémon-style creatures
-- Generate AI-powered PokAImon from your doodles
-- Browse a gallery of created PokAImon
+- Draw your own AImon-style creatures
+- Generate AI-powered AImon from your doodles
+- Browse a gallery of created AImon
 - Like your favorite creations
 
 ## What You'll Learn
@@ -103,7 +103,7 @@ The app should open at `http://localhost:5173`
 
 ## Using Your Gemini API Key
 
-The app uses the Gemini API for AI-powered PokAImon generation. To provide your API key:
+The app uses the Gemini API for AI-powered AImon generation. To provide your API key:
 
 ### Getting Your API Key
 
@@ -141,7 +141,7 @@ The `useApiKey` hook provides:
 - `updateApiKey(newKey)` - Update the stored API key
 - `clearApiKey()` - Remove the stored API key
 
-Your API key is stored locally in your browser and never sent to our backend except as part of API requests to generate PokAImon.
+Your API key is stored locally in your browser and never sent to our backend except as part of API requests to generate AImon.
 
 ---
 
@@ -200,7 +200,7 @@ Replace the div with Link:
 
 ```jsx
 <Link to="/" className="text-xl font-bold text-gray-900 dark:text-white">
-  Doodle → PokAImon
+  Doodle → AImon
 </Link>
 ```
 
@@ -323,12 +323,12 @@ Replace the placeholder divs with:
 {
   !lastResult && !isGenerating && (
     <div className="text-center text-gray-500 dark:text-gray-400">
-      <p>Your generated PokAImon will appear here.</p>
+      <p>Your generated AImon will appear here.</p>
     </div>
   );
 }
 {
-  isGenerating && <Spinner label="Generating your Pokémon…" />;
+  isGenerating && <Spinner label="Generating your AImon…" />;
 }
 {
   lastResult && !isGenerating && (
@@ -429,7 +429,7 @@ useEffect(() => {
 ```jsx
 const like = async (id) => {
   try {
-    const res = await fetch(`${API}/api/pokaimon/${id}/like`, {
+    const res = await fetch(`${API}/api/aimon/${id}/like`, {
       method: "PATCH",
     });
     if (!res.ok) throw new Error("Failed to like");
@@ -493,13 +493,13 @@ const like = async (id) => {
 }
 ```
 
-**✅ Test:** Generate a PokAImon, then visit Gallery!
+**✅ Test:** Generate a AImon, then visit Gallery!
 
 ---
 
 ## Step 4: Create Custom Hook
 
-**📍 Location:** `src/hooks/usePokemonGallery.js`
+**📍 Location:** `src/hooks/useAImonGallery.js`
 
 **What you'll learn:** Reusable logic with custom hooks
 
@@ -512,7 +512,7 @@ import { useEffect, useState, useCallback } from "react";
 ### 4.2 Implement the hook
 
 ```jsx
-export function usePokemonGallery() {
+export function useAImonGallery() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -545,13 +545,13 @@ export function usePokemonGallery() {
 Add import:
 
 ```jsx
-import { usePokemonGallery } from "../hooks/usePokemonGallery.js";
+import { useAImonGallery } from "../hooks/useAImonGallery.js";
 ```
 
 Replace the manual fetch code with:
 
 ```jsx
-const { data, loading, error, refetch } = usePokemonGallery();
+const { data, loading, error, refetch } = useAImonGallery();
 ```
 
 Update like function to use refetch:
@@ -559,7 +559,7 @@ Update like function to use refetch:
 ```jsx
 const like = async (id) => {
   try {
-    const res = await fetch(`${API}/api/pokaimon/${id}/like`, {
+    const res = await fetch(`${API}/api/aimon/${id}/like`, {
       method: "PATCH",
     });
     if (!res.ok) throw new Error("Failed to like");
@@ -759,7 +759,7 @@ const availableTypes = useMemo(() => {
 
 Change `{data.map(...)` to `{processedData.map(...)}`
 
-**✅ Test:** Sort and filter your PokAImon!
+**✅ Test:** Sort and filter your AImon!
 
 ---
 

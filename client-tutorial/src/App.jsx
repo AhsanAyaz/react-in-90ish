@@ -33,7 +33,7 @@ export default function App() {
           {/* Placeholder - replace with routing */}
           <div className="text-center text-gray-600 dark:text-gray-400 mt-20">
             <h1 className="text-3xl font-bold mb-4">
-              Welcome to PokAImon Generator!
+              Welcome to AImon Generator!
             </h1>
             <p>Complete Workshop Step 2 to set up routing</p>
           </div>

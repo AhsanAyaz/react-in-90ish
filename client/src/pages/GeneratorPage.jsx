@@ -24,7 +24,10 @@ export default function GeneratorPage() {
           gemini_api_key: apiKey,
         }),
       });
-      if (!res.ok) throw new Error("Failed to generate");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to generate");
+      }
       const json = await res.json();
       setLastResult(json);
     } catch (e) {
@@ -44,15 +47,15 @@ export default function GeneratorPage() {
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col items-center justify-center transition-colors">
         <h2 className="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">
-          PokAImon Result
+          AImon Result
         </h2>
         <div className="relative w-full aspect-square border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-center bg-gray-50 dark:bg-gray-700 overflow-hidden p-2">
           {!lastResult && !isGenerating && (
             <div className="text-center text-gray-500 dark:text-gray-400">
-              <p>Your generated PokAImon will appear here.</p>
+              <p>Your generated AImon will appear here.</p>
             </div>
           )}
-          {isGenerating && <Spinner label="Generating your Pokémon…" />}
+          {isGenerating && <Spinner label="Generating your AImon…" />}
           {lastResult && !isGenerating && (
             <img
               src={

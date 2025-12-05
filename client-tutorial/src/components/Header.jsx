@@ -1,7 +1,7 @@
 // ⏸️ WORKSHOP STEP 1: Set Up Routing
 // TODO: Import Link and NavLink from react-router-dom
 
-import ApiKeyPrompt from './ApiKeyPrompt.jsx';
+import ApiKeyPrompt from "./ApiKeyPrompt.jsx";
 
 export default function Header() {
   // ⏸️ WORKSHOP STEP 5: Add Context
@@ -13,12 +13,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between flex-wrap gap-4">
         {/* ⏸️ WORKSHOP STEP 1: Replace div with Link */}
         <div className="text-xl font-bold text-gray-900 dark:text-white">
-          Doodle → PokAImon
+          Doodle → AImon
         </div>
 
         <div className="flex items-center gap-4">
           <ApiKeyPrompt />
-          
+
           <nav className="flex gap-2">
             {/* ⏸️ WORKSHOP STEP 1: Add NavLink components here */}
             {/* TODO: Add NavLink to="/" and to="/gallery" */}

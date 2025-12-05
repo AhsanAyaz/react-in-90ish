@@ -7,8 +7,8 @@ const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 export default function GalleryPage() {
   // ⏸️ WORKSHOP STEP 4: Use Custom Hook
-  // TODO: Replace manual fetch with usePokemonGallery hook
-  // const { data, loading, error, refetch } = usePokemonGallery();
+  // TODO: Replace manual fetch with useAImonGallery hook
+  // const { data, loading, error, refetch } = useAImonGallery();
 
   // Temporary placeholder data
   const data = [];
@@ -36,7 +36,7 @@ export default function GalleryPage() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          PokAImon Gallery
+          AImon Gallery
         </h2>
 
         {/* ⏸️ WORKSHOP STEP 6: Add Sort and Filter Controls */}
@@ -45,7 +45,7 @@ export default function GalleryPage() {
 
       {data.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-400">
-          No generated PokAImon yet. Head to the Generator!
+          No generated AImon yet. Head to the Generator!
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -34,7 +34,7 @@ By the end of this tutorial, you'll understand:
 
 ## 🎨 What You'll Build
 
-**PokAImon Generator** - An AI-powered creature creator app with:
+**AImon Generator** - An AI-powered creature creator app with:
 
 - 🎨 Canvas drawing interface
 - 🤖 AI-generated creatures from your doodles
@@ -146,14 +146,14 @@ Open `client-tutorial/README.md` for the complete step-by-step tutorial guide. T
 
 Base URL: `http://localhost:3001`
 
-| Method  | Endpoint                 | Description           |
-| ------- | ------------------------ | --------------------- |
-| `GET`   | `/api/health`            | Health check          |
-| `GET`   | `/api/gallery`           | Get all PokAImon      |
-| `POST`  | `/api/generate`          | Generate new PokAImon |
-| `PATCH` | `/api/pokaimon/:id/like` | Like a PokAImon       |
+| Method  | Endpoint              | Description        |
+| ------- | --------------------- | ------------------ |
+| `GET`   | `/api/health`         | Health check       |
+| `GET`   | `/api/gallery`        | Get all AImon      |
+| `POST`  | `/api/generate`       | Generate new AImon |
+| `PATCH` | `/api/aimon/:id/like` | Like a AImon       |
 
-### Example: Generate PokAImon
+### Example: Generate AImon
 
 ```bash
 curl -X POST http://localhost:3001/api/generate \

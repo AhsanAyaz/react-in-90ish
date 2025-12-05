@@ -3,10 +3,10 @@
 ## 0:00 - Intro & The "Why"
 
 **(Face to Camera)**
-"Hey everyone! Welcome back. Today, we’re doing something crazy. We are going to learn React—the _modern_ React of 2025—in about 90 minutes. And we’re not just building a To-Do list. We’re building a full-stack **PokAImon Generator**."
+"Hey everyone! Welcome back. Today, we’re doing something crazy. We are going to learn React—the _modern_ React of 2025—in about 90 minutes. And we’re not just building a To-Do list. We’re building a full-stack **AImon Generator**."
 
 **(Screen Share: Demo of the finished app)**
-"Check this out. We’ll have a canvas where you draw a doodle... hit 'Generate'... and boom! AI turns it into a Pokémon card with stats, powers, and a type. We’ll save it to a database and build a gallery. It’s a real app."
+"Check this out. We’ll have a canvas where you draw a doodle... hit 'Generate'... and boom! AI turns it into a AImon card with stats, powers, and a type. We’ll save it to a database and build a gallery. It’s a real app."
 
 **(Face to Camera)**
 "But here’s the kicker: React is changing. You’ve heard about **React 19**, the **Compiler**, **Server Components**. It’s a lot. Most tutorials are stuck in 2020. Today, I’m going to teach you the core fundamentals that haven't changed, _and_ I’ll show you where React is going so you don't learn obsolete habits. Let’s dive in."
@@ -156,28 +156,28 @@ useEffect(() => {
 }, [])
 ```
 
-"But copying this logic everywhere is messy. Let's build a **Custom Hook**: `usePokemonGallery`."
+"But copying this logic everywhere is messy. Let's build a **Custom Hook**: `useAImonGallery`."
 
 ```jsx
-// hooks/usePokemonGallery.js
-export function usePokemonGallery() {
+// hooks/useAImonGallery.js
+export function useAImonGallery() {
   const [data, setData] = useState([]);
   // ... fetch logic ...
   return { data, loading, refetch };
 }
 ```
 
-"Now our component is clean: `const { data } = usePokemonGallery()`."
+"Now our component is clean: `const { data } = useAImonGallery()`."
 
 ---
 
 ## 75:00 - Lists & Keys
 
-"We have a list of Pokémon. We map over them."
+"We have a list of AImon. We map over them."
 
 ```jsx
 {
-  data.map((p) => <Card key={p.id} pokemon={p} />);
+  data.map((p) => <Card key={p.id} aimon={p} />);
 }
 ```
 

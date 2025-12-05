@@ -2,7 +2,7 @@
 
 ## Overview
 
-The PokAImon Generator now supports client-side API key management, allowing users to provide their own Gemini API keys for AI image generation without needing server-side configuration.
+The AImon Generator now supports client-side API key management, allowing users to provide their own Gemini API keys for AI image generation without needing server-side configuration.
 
 ## How It Works
 
@@ -24,16 +24,19 @@ The PokAImon Generator now supports client-side API key management, allowing use
 ### For End Users
 
 1. **Get an API Key**:
+
    - Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
    - Create a new API key
    - Copy the key
 
 2. **Set the API Key in the App**:
+
    - Click the "⚠️ Set Gemini API Key" button in the header
    - Paste your API key (it will be masked like a password)
    - Click "Save"
 
-3. **Generate Pokemon**:
+3. **Generate AImon**:
+
    - Your API key is now stored locally and will be used for all generations
    - The key persists across browser sessions
 
@@ -51,7 +54,7 @@ import { useApiKey } from './context/ApiKeyContext';
 
 function MyComponent() {
   const { apiKey, updateApiKey, clearApiKey } = useApiKey();
-  
+
   // Use apiKey in API calls
   const response = await fetch('/api/generate', {
     method: 'POST',
@@ -69,9 +72,9 @@ function MyComponent() {
 The server accepts the API key in the request body:
 
 ```javascript
-app.post('/api/generate', async (req, res) => {
+app.post("/api/generate", async (req, res) => {
   const { doodle_data, gemini_api_key } = req.body;
-  
+
   // Use client-provided key or fall back to env var
   const result = await generateImage(doodle_data, gemini_api_key);
   res.json(result);
@@ -81,11 +84,13 @@ app.post('/api/generate', async (req, res) => {
 ## Components
 
 ### `ApiKeyContext.jsx`
+
 - React Context provider for managing API key state
 - Handles localStorage persistence
 - Provides `updateApiKey()` and `clearApiKey()` functions
 
 ### `ApiKeyPrompt.jsx`
+
 - UI component for setting/changing the API key
 - Shows warning when no key is set
 - Displays confirmation when key is configured
@@ -112,6 +117,7 @@ app.post('/api/generate', async (req, res) => {
 ### 🔐 Best Practices
 
 1. **For Demos/Workshops**: Client-side API keys work great!
+
    - Users can try the app with their own keys
    - No backend configuration needed
    - Perfect for teaching React
@@ -125,9 +131,10 @@ app.post('/api/generate', async (req, res) => {
 
 ### POST /api/generate
 
-Generate a Pokemon from a doodle.
+Generate a AImon from a doodle.
 
 **Request Body:**
+
 ```json
 {
   "doodle_data": "base64-encoded-png-data",
@@ -136,6 +143,7 @@ Generate a Pokemon from a doodle.
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -147,11 +155,12 @@ Generate a Pokemon from a doodle.
 }
 ```
 
-### POST /api/pokaimon/:id/action-image
+### POST /api/aimon/:id/action-image
 
-Generate an action image for a Pokemon's power.
+Generate an action image for a AImon's power.
 
 **Request Body:**
+
 ```json
 {
   "power": { "name": "Flame Burst", "description": "..." },
@@ -184,19 +193,22 @@ VITE_BACKEND_URL=http://localhost:3001
 ## Demo Flow
 
 1. **Workshop Introduction**:
+
    - Show the warning button in the header
    - Explain that users need their own API key
    - Demo getting a key from Google AI Studio
 
 2. **Setting the Key**:
+
    - Click "Set Gemini API Key"
    - Paste the key (show it's masked)
    - Click Save
    - Show the confirmation "✓ API Key Set"
 
 3. **Testing Generation**:
+
    - Draw a doodle
-   - Click "Generate PokAImon"
+   - Click "Generate AImon"
    - Show that it works with the client-provided key
 
 4. **Behind the Scenes** (code walkthrough):
@@ -211,6 +223,7 @@ VITE_BACKEND_URL=http://localhost:3001
 **Symptoms**: Generation fails with "GEMINI_API_KEY missing"
 
 **Solutions**:
+
 1. Check if API key is set in the UI (look for "✓ API Key Set")
 2. Verify the key is correct at [Google AI Studio](https://aistudio.google.com/app/apikey)
 3. Check browser console for localStorage: `localStorage.getItem('GEMINI_API_KEY')`
@@ -220,6 +233,7 @@ VITE_BACKEND_URL=http://localhost:3001
 **Symptoms**: Key not saved after browser refresh
 
 **Solutions**:
+
 1. Check if localStorage is disabled in browser
 2. Verify browser is not in incognito/private mode
 3. Check browser console for errors
@@ -229,6 +243,7 @@ VITE_BACKEND_URL=http://localhost:3001
 **Symptoms**: Server uses env var even when client provides key
 
 **Solutions**:
+
 1. Verify request body includes `gemini_api_key`
 2. Check network tab in DevTools
 3. Review server logs for API key source
@@ -236,6 +251,7 @@ VITE_BACKEND_URL=http://localhost:3001
 ## Future Enhancements
 
 Possible improvements:
+
 - API key validation on save
 - Multiple API key profiles
 - Usage tracking/quota display

@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
 import Spinner from "../components/Spinner.jsx";
-import { usePokemonGallery } from "../hooks/usePokemonGallery.js";
+import { useAImonGallery } from "../hooks/useAImonGallery.js";
 
 const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 export default function GalleryPage() {
-  const { data, loading, error, refetch } = usePokemonGallery();
+  const { data, loading, error, refetch } = useAImonGallery();
   const [sortBy, setSortBy] = useState("newest");
   const [filterType, setFilterType] = useState("all");
 
@@ -42,7 +42,7 @@ export default function GalleryPage() {
 
   const like = async (id) => {
     try {
-      const res = await fetch(`${API}/api/pokaimon/${id}/like`, {
+      const res = await fetch(`${API}/api/aimon/${id}/like`, {
         method: "PATCH",
       });
       if (!res.ok) throw new Error("Failed to like");
@@ -64,7 +64,7 @@ export default function GalleryPage() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          PokAImon Gallery
+          AImon Gallery
         </h2>
 
         <div className="flex flex-col sm:flex-row gap-3">
@@ -107,7 +107,7 @@ export default function GalleryPage() {
 
       {processedData.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-400">
-          No generated PokAImon yet. Head to the Generator!
+          No generated AImon yet. Head to the Generator!
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -10,6 +10,7 @@ npm run build-client
 ```
 
 This will:
+
 1. Build the client-tutorial production bundle
 2. Copy it to `server/public/app/`
 3. Server will serve it at `http://your-server/app/`
@@ -29,6 +30,7 @@ VITE_BACKEND_URL=https://your-production-domain.com
 ### 2. Vite Base Path
 
 Already configured in `vite.config.js`:
+
 ```javascript
 base: '/app/', // Client will be served from /app/ subdirectory
 ```
@@ -36,10 +38,11 @@ base: '/app/', // Client will be served from /app/ subdirectory
 ### 3. React Router Fallback
 
 Already configured in `server/src/index.js`:
+
 ```javascript
 // SPA fallback - serves index.html for all /app/* routes
-app.get('/app/*', (req, res) => {
-  res.sendFile('public/app/index.html', { root: '.' });
+app.get("/app/*", (req, res) => {
+  res.sendFile("public/app/index.html", { root: "." });
 });
 ```
 
@@ -48,6 +51,7 @@ app.get('/app/*', (req, res) => {
 ### 1. Build Locally or on Server
 
 **Option A: Build locally and deploy**
+
 ```bash
 cd server
 npm run build-client
@@ -55,6 +59,7 @@ npm run build-client
 ```
 
 **Option B: Build on server**
+
 ```bash
 # SSH into your Cloudways server
 cd /path/to/your/app/server
@@ -70,18 +75,22 @@ You should see the client application running!
 ## API URL Configuration
 
 ### Development
+
 Client uses: `http://localhost:3001`
 
 ### Production
+
 Set `VITE_BACKEND_URL` before building:
 
 **For same-server deployment:**
+
 ```bash
 # client-tutorial/.env
 VITE_BACKEND_URL=https://your-domain.com
 ```
 
 **For separate API server:**
+
 ```bash
 # client-tutorial/.env
 VITE_BACKEND_URL=https://api.your-domain.com
@@ -90,20 +99,24 @@ VITE_BACKEND_URL=https://api.your-domain.com
 ## Troubleshooting
 
 ### Routes not working (404 errors)
+
 - **Cause:** SPA fallback not configured
 - **Fix:** Ensure the `app.get('/app/*')` route is in `server/src/index.js` AFTER API routes
 
 ### Assets not loading (404 for .js/.css files)
+
 - **Cause:** Incorrect base path
 - **Fix:** Check `vite.config.js` has `base: '/app/'`
 
 ### API calls failing
+
 - **Cause:** Wrong API URL
 - **Fix:** Check `VITE_BACKEND_URL` in client `.env` before building
 
 ### Images not displaying
+
 - **Cause:** Images stored as file paths, client needs backend URL
--  **Fix:** Already handled - client prepends `${API}` to image URLs
+- **Fix:** Already handled - client prepends `${API}` to image URLs
 
 ## File Structure After Deployment
 
@@ -114,7 +127,7 @@ server/
 │   │   ├── index.html
 │   │   ├── assets/
 │   │   └── ...
-│   └── images/           # Generated Pokemon images
+│   └── images/           # Generated AImon images
 ├── src/
 │   └── index.js          # Server with SPA fallback
 └── scripts/

@@ -13,7 +13,7 @@ export default function Header() {
           to="/"
           className="text-xl font-bold text-gray-900 dark:text-white"
         >
-          Doodle → PokAImon
+          Doodle → AImon
         </Link>
 
         <div className="flex items-center gap-4">

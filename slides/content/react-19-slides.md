@@ -31,25 +31,32 @@
 - What is React & Virtual DOM
 
 <!-- .element: class="fragment" -->
+
 - JSX & Components
 
 <!-- .element: class="fragment" -->
+
 - Event Handlers & Forms
 
 <!-- .element: class="fragment" -->
+
 - Conditional Rendering & Lists
 
 <!-- .element: class="fragment" -->
+
 - State & Props
 
 <!-- .element: class="fragment" -->
+
 - Hooks: `useState`, `useEffect`, `useMemo`
 
 <!-- .element: class="fragment" -->
+
 - Context API & React Router
 
 <!-- .element: class="fragment" -->
-- Building a `PokAImon Generator` app (workshop)!
+
+- Building a `AImon Generator` app (workshop)!
 
 <!-- .element: class="fragment" -->
 
@@ -57,10 +64,10 @@
 
 ## Demo: What We'll Build
 
-**PokAImon Generator** - AI-powered Pokémon creator
+**AImon Generator** - AI-powered AImon creator
 
 - 🎨 Draw your own creature
-- 🤖 Generate AI Pokémon from doodles
+- 🤖 Generate AI AImon from doodles
 - 📸 Gallery with like/filter features
 - 🌙 Dark mode toggle
 
@@ -418,7 +425,7 @@ function Button() {
 }
 
 // Inline handler
-<button onClick={() => alert('Clicked!')}>Click</button>
+<button onClick={() => alert('Clicked!')}>Click</button>;
 ```
 
 --
@@ -483,13 +490,7 @@ function GreetButtons() {
 ```jsx
 function Greeting({ isLoggedIn }) {
   return (
-    <div>
-      {isLoggedIn ? (
-        <h1>Welcome back!</h1>
-      ) : (
-        <h1>Please sign in.</h1>
-      )}
-    </div>
+    <div>{isLoggedIn ? <h1>Welcome back!</h1> : <h1>Please sign in.</h1>}</div>
   );
 }
 ```
@@ -500,13 +501,7 @@ function Greeting({ isLoggedIn }) {
 
 ```jsx
 function Notifications({ count }) {
-  return (
-    <div>
-      {count > 0 && (
-        <span>You have {count} new messages!</span>
-      )}
-    </div>
-  );
+  return <div>{count > 0 && <span>You have {count} new messages!</span>}</div>;
 }
 ```
 
@@ -521,15 +516,15 @@ function StatusMessage({ status }) {
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
-  
+
   if (status === 'error') {
     return <div>Error occurred!</div>;
   }
-  
+
   if (status === 'success') {
     return <div>Success!</div>;
   }
-  
+
   return <div>Unknown status</div>;
 }
 ```
@@ -916,13 +911,13 @@ function UserProfile({ userId }) {
 ## Complete API Call Pattern
 
 ```jsx
-function PokemonGallery() {
-  const [pokemon, setPokemon] = useState([]);
+function AImonGallery() {
+  const [aimon, setAImon] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPokemon = async () => {
+    const fetchAImon = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -934,7 +929,7 @@ function PokemonGallery() {
         }
 
         const data = await response.json();
-        setPokemon(data);
+        setAImon(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -942,7 +937,7 @@ function PokemonGallery() {
       }
     };
 
-    fetchPokemon();
+    fetchAImon();
   }, []);
 
   if (loading) return <div>Loading...</div>;
@@ -950,8 +945,8 @@ function PokemonGallery() {
 
   return (
     <div>
-      {pokemon.map((p) => (
-        <PokemonCard key={p.id} pokemon={p} />
+      {aimon.map((p) => (
+        <AImonCard key={p.id} aimon={p} />
       ))}
     </div>
   );
@@ -1128,11 +1123,13 @@ function Header() {
 ## Our Tech Stack
 
 **Frontend:**
+
 - ⚛️ React 19
 - 🎨 Tailwind CSS
 - 🔧 Vite
 
 **Backend:**
+
 - 🟢 Node.js + Express
 - 🐘 PostgreSQL
 - ⚡ **Memcached**
@@ -1146,6 +1143,7 @@ function Header() {
 Fast in-memory caching for database query results
 
 **Why Memcached?**
+
 - Simple key-value storage (perfect for our needs)
 - Easy to set up and use
 - 10-40x performance improvement
@@ -1181,11 +1179,11 @@ Fast in-memory caching for database query results
 
 ## Performance Benefits
 
-| Metric | Without Cache | With Memcached |
-|--------|---------------|----------------|
-| **Response Time** | ~150ms | ~3ms |
-| **DB Load** | 100% queries hit DB | ~10% queries hit DB |
-| **Requests/sec** | ~200 | ~2000 |
+| Metric            | Without Cache       | With Memcached      |
+| ----------------- | ------------------- | ------------------- |
+| **Response Time** | ~150ms              | ~3ms                |
+| **DB Load**       | 100% queries hit DB | ~10% queries hit DB |
+| **Requests/sec**  | ~200                | ~2000               |
 
 **Result:** 50x faster responses, 10x more capacity! ⚡
 
@@ -1197,17 +1195,17 @@ Fast in-memory caching for database query results
 // Gallery endpoint with Memcached
 app.get('/api/gallery', async (req, res) => {
   const cacheKey = 'gallery:all';
-  
+
   // Try cache first
   const cached = await cache.get(cacheKey);
   if (cached) {
     return res.json(cached); // ⚡ Cache hit! ~3ms
   }
-  
+
   // Cache miss - fetch from DB
-  const pokemon = await db.list(); // ~150ms
-  await cache.set(cacheKey, pokemon, 300); // Cache for 5 min
-  res.json(pokemon);
+  const aimon = await db.list(); // ~150ms
+  await cache.set(cacheKey, aimon, 300); // Cache for 5 min
+  res.json(aimon);
 });
 ```
 
@@ -1216,10 +1214,12 @@ app.get('/api/gallery', async (req, res) => {
 ## Other Caching Options
 
 **Redis:**
+
 - When you need sessions, leaderboards, real-time features
 - More features, slightly more complex
 
 **Varnish/CDN:**
+
 - HTTP caching at the edge
 - Great for static content
 
@@ -1231,7 +1231,7 @@ app.get('/api/gallery', async (req, res) => {
 
 ```jsx
 // React Frontend fetches data
-const response = await fetch('/api/pokemon/123');
+const response = await fetch('/api/aimon/123');
 // ↓
 // Varnish checks cache (hit!)
 // Returns cached response in 10ms ⚡
@@ -1288,10 +1288,10 @@ Also available as bonus content:
 
 --
 
-Building **PokAImon Generator** - a complete React app:
+Building **AImon Generator** - a complete React app:
 
-- 🎨 Draw doodles and generate AI PokAImon
-- 🖼️ Browse gallery with filtering/sorting  
+- 🎨 Draw doodles and generate AI AImon
+- 🖼️ Browse gallery with filtering/sorting
 - 🧭 React Router navigation
 - 🎣 Custom hooks & Context API
 - 📦 Complete production-ready app
